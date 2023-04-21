@@ -42,6 +42,7 @@ public:
 	void Create_Skyrmion();
 	void Print_Skyrmion(string SkyrmionFilepath);
 // Need to add skyrmion number routine
+	void Skyrmion_Number_Calculate();
 };
 
 
@@ -88,6 +89,19 @@ double offset=0.0001;
 double sk_cent_x, sk_cent_y;
 double sk_cent_x_temp, sk_cent_y_temp;
 double dis;
+double vorticity, helicity, polarity;
+
+vorticity = 1.0;
+helicity = PI_/2.0;
+polarity = -1.0;
+
+/*
+vorticity = 1.0 (skyr) ; vorticity = -1.0 (antiskyr)
+helicity = pi (inward Neel skyr) ; helicity = 0.0 (outward Neel skyr)
+helicity = -pi/2 (anticlock Bloch skyr) ; helicity = pi/2 (Clock Bloch skyr)
+helicity = pi/n (n = integer) for twisted skyrmion
+polarity = 1.0 (up skyr center spin) ; vorticity = 1.0 (down skyr center spin)
+*/
 
 for(int ix=0;ix<Lx;ix++){
 for(int iy=0;iy<Ly;iy++){
@@ -107,7 +121,20 @@ sk_cent_y = ((  (2*Radius_y + 1.0)*sk_iy) + Radius_y );
 
 dis = Distance(ix*1.0, iy*1.0, sk_cent_x, sk_cent_y);
 
+Theta_[ix][iy] += ( 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis)) + acos(-polarity)) * Theta((Radius_x) -dis);
 
+if ( iy<sk_cent_y ) {
+Phi_[ix][iy] += (-acos(vorticity*(ix-sk_cent_x)/dis) - helicity) * Theta((Radius_x) -dis);
+}
+else {
+Phi_[ix][iy] += ( acos(vorticity*(ix-sk_cent_x)/dis) - helicity ) * Theta((Radius_x) -dis);
+}
+
+if ( ix==sk_cent_x && iy==sk_cent_y ) {
+	Phi_[ix][iy] = helicity;
+}
+
+/*
 if(Skyrmion_Type=="AntiSkyrmion"){
 Theta_[ix][iy] += 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis))*Theta((Radius_x) -dis);
 
@@ -123,10 +150,10 @@ Phi_[ix][iy] += (PI_ + atan(  (abs(ix-sk_cent_x)+offset)/(abs(iy-sk_cent_y)+offs
 else if (iy>sk_cent_y && ix<sk_cent_x) {
 Phi_[ix][iy] += (2*PI_ - atan(  (abs(ix-sk_cent_x)+offset)/(abs(iy-sk_cent_y)+offset)  ) ) * Theta((Radius_x) -dis);
 }
-}
+}*/
 
 if(Skyrmion_Type=="BlochSkyrmion"){
-//add Here
+// add here
 }
 
 if(Skyrmion_Type=="NormalSkyrmion"){
@@ -134,8 +161,6 @@ if(Skyrmion_Type=="NormalSkyrmion"){
 }
 
 //similarly more Skyrmions if needed ex. bimeron etc.
-
-
 
 /*
 if(iy<sk_cent_y){
@@ -146,9 +171,9 @@ Phi_[ix][iy] += acos((ix-sk_cent_x+offset)/(dis+offset))*Theta((Radius_x) -dis);
 }
 */
 
-if(Theta((Radius_x) -dis)!=0.0){
-cout<<ix<<"   "<<iy<<"  "<<sk_ix<<"  "<<sk_iy<<"  "<<sk_cent_x<<"   "<<sk_cent_y<<endl;
-}
+// if(Theta((Radius_x) -dis)!=0.0){
+// cout<<ix<<"   "<<iy<<"  "<<sk_ix<<"  "<<sk_iy<<"  "<<sk_cent_x<<"   "<<sk_cent_y<<endl;
+// }
 
 }
 }
@@ -184,5 +209,67 @@ outfile<<endl;
 
 }
 
+
+void SKYRMION::Skyrmion_Number_Calculate(){
+
+double chi1, chi2, chi;
+int jx, jy, jx1, jy1, jx2, jy2;
+
+double** sx = new double*[Lx];
+for (int ix = 0; ix < Lx; ix++) {
+		sx[ix] = new double[Ly];
+		for (int iy = 0; iy < Ly; iy++) {
+				sx[ix][iy] = 0.0;
+		}
+}
+
+double** sy = new double*[Lx];
+for (int ix = 0; ix < Lx; ix++) {
+		sy[ix] = new double[Ly];
+		for (int iy = 0; iy < Ly; iy++) {
+				sy[ix][iy] = 0.0;
+		}
+}
+
+double** sz = new double*[Lx];
+for (int ix = 0; ix < Lx; ix++) {
+		sz[ix] = new double[Ly];
+		for (int iy = 0; iy < Ly; iy++) {
+				sz[ix][iy] = 0.0;
+		}
+}
+
+for (int ix = 0 ; ix < Lx ; ix++){
+	for (int iy = 0 ; iy < Ly ; iy++){
+		sx[ix][iy] = Spin_Size * sin(Theta_[ix][iy]) * cos(Phi_[ix][iy]);
+		sy[ix][iy] = Spin_Size * sin(Theta_[ix][iy]) * sin(Phi_[ix][iy]);
+		sz[ix][iy] = Spin_Size * cos(Theta_[ix][iy]);
+	}
+}
+
+chi = 0.0;
+for (int ix = 0 ; ix < Lx ; ix++){
+	for (int iy = 0 ; iy < Ly ; iy++){
+		chi1 = 0.0 ; chi2 = 0.0;
+		jy = iy      ; jx1 = ix + 1; if (jx1 >= Lx) {jx1 = 0;}
+		jy = iy      ; jx2 = ix - 1; if (jx2 < 0)  {jx2 = Lx - 1;}
+		jy1 = iy + 1 ; jx = ix     ; if (jy1 >= Ly) {jy1 = 0;}
+		jy2 = iy - 1 ; jx = ix     ; if (jy2 < 0)  {jy2 = Ly - 1;}
+
+		chi1 = (1/(8.0*PI_)) * (  (sx[ix][iy] * (sy[jx1][jy]*sz[jx][jy1] - sz[jx1][jy]*sy[jx][jy1])) + \
+															(sy[ix][iy] * (sz[jx1][jy]*sx[jx][jy1] - sx[jx1][jy]*sz[jx][jy1])) + \
+															(sz[ix][iy] * (sx[jx1][jy]*sy[jx][jy1] - sy[jx1][jy]*sx[jx][jy1]))  );
+
+		chi2 = (1/(8.0*PI_)) * (  (sx[ix][iy] * (sy[jx2][jy]*sz[jx][jy2] - sz[jx2][jy]*sy[jx][jy2])) + \
+															(sy[ix][iy] * (sz[jx2][jy]*sx[jx][jy2] - sx[jx2][jy]*sz[jx][jy2])) + \
+															(sz[ix][iy] * (sx[jx2][jy]*sy[jx][jy2] - sy[jx2][jy]*sx[jx][jy2]))  );
+
+		chi = chi + chi1 + chi2;
+
+	}
+}
+cout<<chi<<endl;
+
+}
 
 #endif

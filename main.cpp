@@ -16,8 +16,8 @@ int main(){
 string my_skyrmion_type="AntiSkyrmion";
 SKYRMION my_skyrmion(my_skyrmion_type);
 
-my_skyrmion.Lx=21;
-my_skyrmion.Ly=21;
+my_skyrmion.Lx=21*3;
+my_skyrmion.Ly=21*3;
 my_skyrmion.Diameter=20;
 my_skyrmion.Beta=0.2;
 my_skyrmion.Spin_Size=1.0;
@@ -25,6 +25,7 @@ my_skyrmion.Spin_Size=1.0;
 my_skyrmion.Initialize_Skyrmion();
 my_skyrmion.Create_Skyrmion();
 my_skyrmion.Print_Skyrmion("MySkyrmion.txt");
+my_skyrmion.Skyrmion_Number_Calculate();
 
 
 
