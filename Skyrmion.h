@@ -19,11 +19,11 @@ class SKYRMION{
 
 
 public:
-/*	SKYRMION(int &Lx, int &Ly)
-	    :Lx(Lx), Ly(Ly)
+	SKYRMION(string &Skyrmion_Type_)
+	    :Skyrmion_Type(Skyrmion_Type_)
 	{
 	}
-*/	
+	
 
 	int Diameter;
 	double Radius_x, Radius_y; //Radius of skyrmion
@@ -35,6 +35,8 @@ public:
 	Mat_2_doub Theta_, Phi_;
 	double Spin_Size;
 
+
+	string Skyrmion_Type;
 	
 	void Initialize_Skyrmion();	
 	void Create_Skyrmion();
@@ -105,16 +107,33 @@ sk_cent_y = ((  (2*Radius_y + 1.0)*sk_iy) + Radius_y );
 
 dis = Distance(ix*1.0, iy*1.0, sk_cent_x, sk_cent_y);
 
+
+if(Skyrmion_Type=="AntiSkyrmion"){
 Theta_[ix][iy] += 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis))*Theta((Radius_x) -dis);
 
-
-
-if(ix>sk_cent_x ){
-Phi_[ix][iy] += (0*PI_ + atan(  (iy-sk_cent_y+offset)/(ix-sk_cent_x+offset)  ) ) * Theta((Radius_x) -dis);
+if( iy>=sk_cent_y && ix>=sk_cent_x ){
+Phi_[ix][iy] += (atan(  (ix-sk_cent_x+offset)/(iy-sk_cent_y+offset)  ) ) * Theta((Radius_x) -dis);
 }
-else{
-Phi_[ix][iy] += (0*PI_+ atan(  (iy-sk_cent_y+offset)/(ix-sk_cent_x+offset)  ) ) * Theta((Radius_x) -dis);
+else if (iy<sk_cent_y && ix>=sk_cent_x){
+Phi_[ix][iy] += (PI_ - atan(  (abs(ix-sk_cent_x)+offset)/(abs(iy-sk_cent_y)+offset)  ) ) * Theta((Radius_x) -dis);
 }
+else if (iy<=sk_cent_y && ix<sk_cent_x){
+Phi_[ix][iy] += (PI_ + atan(  (abs(ix-sk_cent_x)+offset)/(abs(iy-sk_cent_y)+offset)  ) ) * Theta((Radius_x) -dis);
+}
+else if (iy>sk_cent_y && ix<sk_cent_x) {
+Phi_[ix][iy] += (2*PI_ - atan(  (abs(ix-sk_cent_x)+offset)/(abs(iy-sk_cent_y)+offset)  ) ) * Theta((Radius_x) -dis);
+}
+}
+
+if(Skyrmion_Type=="BlochSkyrmion"){
+//add Here
+}
+
+if(Skyrmion_Type=="NormalSkyrmion"){
+//add Here
+}
+
+//similarly more Skyrmions if needed ex. bimeron etc.
 
 
 

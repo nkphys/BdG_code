@@ -13,4 +13,4 @@ set border 4095 lw 3
 set style arrow 1 head filled size screen 0.02,20 lw 10 lc pal 
 set style arrow 3 head filled size screen 0.03,5,5  lw 3 lc pal 
 scale = 0.7 
-p 'Skyrmion_1.txt' u (($1)-0.4*$4):(($2)-0.4*$5):(($4)*scale):(($5)*scale):(($3)) w vec arrowstyle 3 notitle
+p 'MySkyrmion.txt' u (($1)-0.4*$4):(($2)-0.4*$5):(($4)*scale):(($5)*scale):(($3)) w vec arrowstyle 3 notitle

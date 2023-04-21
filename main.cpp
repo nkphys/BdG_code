@@ -13,7 +13,8 @@ int main(){
 
 
 
-SKYRMION my_skyrmion;
+string my_skyrmion_type="AntiSkyrmion";
+SKYRMION my_skyrmion(my_skyrmion_type);
 
 my_skyrmion.Lx=21;
 my_skyrmion.Ly=21;
@@ -23,7 +24,7 @@ my_skyrmion.Spin_Size=1.0;
 
 my_skyrmion.Initialize_Skyrmion();
 my_skyrmion.Create_Skyrmion();
-my_skyrmion.Print_Skyrmion("Skyrmion_1.txt");
+my_skyrmion.Print_Skyrmion("MySkyrmion.txt");
 
 
 
