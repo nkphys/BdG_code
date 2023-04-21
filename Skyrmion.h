@@ -39,7 +39,7 @@ public:
 	void Initialize_Skyrmion();	
 	void Create_Skyrmion();
 	void Print_Skyrmion(string SkyrmionFilepath);
-
+// Need to add skyrmion number routine
 };
 
 
