@@ -8,6 +8,15 @@ extern "C" void dsyev_(char * , char * , int * , double * , int *, double *, dou
 #ifndef USE_COMPLEX
 
 
+double Fermi(double x, double x0_, double alpha){
+double val;
+
+val = 1.0/(exp(alpha*(x-x0_)) + 1);
+
+return val;
+}
+
+
 double Distance(double x1, double y1, double x2, double y2){
 
 double val;

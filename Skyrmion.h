@@ -29,13 +29,16 @@ public:
 	double Radius_x, Radius_y; //Radius of skyrmion
 	double Beta; //decay coeffcient
 		
+	double OptimizedBeta;
 	int No_of_Sk_x, No_of_Sk_y;
 	int Lx, Ly;	
 	 
 	Mat_2_doub Theta_, Phi_;
 	double Spin_Size;
 
-
+		
+	double Skyrmion_number;
+	double vorticity, helicity, polarity; 
 	string Skyrmion_Type;
 	
 	void Initialize_Skyrmion();	
@@ -79,6 +82,7 @@ assert(false);
 
 
 Spin_Size=1.0;
+OptimizedBeta=0.05;
 
 }
 
@@ -86,14 +90,11 @@ void SKYRMION::Create_Skyrmion(){
 
 
 double offset=0.0001;
+double alpha = 1.0; //contribution decay constant used in "Fermi" function
 double sk_cent_x, sk_cent_y;
 double sk_cent_x_temp, sk_cent_y_temp;
 double dis;
-double vorticity, helicity, polarity;
 
-vorticity = 1.0;
-helicity = PI_/2.0;
-polarity = -1.0;
 
 /*
 vorticity = 1.0 (skyr) ; vorticity = -1.0 (antiskyr)
@@ -121,13 +122,19 @@ sk_cent_y = ((  (2*Radius_y + 1.0)*sk_iy) + Radius_y );
 
 dis = Distance(ix*1.0, iy*1.0, sk_cent_x, sk_cent_y);
 
-Theta_[ix][iy] += ( 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis)) + acos(-polarity)) * Theta((Radius_x) -dis);
+//Theta_[ix][iy] += ( 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis)) + acos(-polarity)) * Theta((Radius_x) -dis);
 
+Theta_[ix][iy] += ( 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis)) + acos(-polarity)) * Fermi(dis, Radius_x, alpha);
+
+
+//Find reference of following equations
 if ( iy<sk_cent_y ) {
-Phi_[ix][iy] += (-acos(vorticity*(ix-sk_cent_x)/dis) - helicity) * Theta((Radius_x) -dis);
+Phi_[ix][iy] += (-acos(vorticity*(ix-sk_cent_x)/dis) - helicity) * Fermi(dis, Radius_x, alpha);
+//Phi_[ix][iy] += ( -acos(vorticity*(ix-sk_cent_x)/dis) - helicity )*Theta((Radius_x) -dis);
 }
 else {
-Phi_[ix][iy] += ( acos(vorticity*(ix-sk_cent_x)/dis) - helicity ) * Theta((Radius_x) -dis);
+Phi_[ix][iy] += ( acos(vorticity*(ix-sk_cent_x)/dis) - helicity ) * Fermi(dis, Radius_x, alpha);
+//Phi_[ix][iy] += ( acos(vorticity*(ix-sk_cent_x)/dis) - helicity )*Theta((Radius_x) -dis);
 }
 
 if ( ix==sk_cent_x && iy==sk_cent_y ) {
@@ -181,7 +188,6 @@ Phi_[ix][iy] += acos((ix-sk_cent_x+offset)/(dis+offset))*Theta((Radius_x) -dis);
 }
 }
 
-
 }
 
 
@@ -207,6 +213,8 @@ outfile<<endl;
 
 }
 
+outfile<<"#Skyrmion number = "<<Skyrmion_number<<endl; 
+
 }
 
 
@@ -215,9 +223,9 @@ void SKYRMION::Skyrmion_Number_Calculate(){
 double chi1, chi2, chi;
 int jx, jy, jx1, jy1, jx2, jy2;
 
-double** sx = new double*[Lx];
+Mat_2_doub sx; sx.resize(Lx);
 for (int ix = 0; ix < Lx; ix++) {
-		sx[ix] = new double[Ly];
+		sx[ix].resize(Ly);
 		for (int iy = 0; iy < Ly; iy++) {
 				sx[ix][iy] = 0.0;
 		}
@@ -268,7 +276,8 @@ for (int ix = 0 ; ix < Lx ; ix++){
 
 	}
 }
-cout<<chi<<endl;
+
+Skyrmion_number=chi;
 
 }
 

@@ -1,0 +1,12 @@
+t_nn=1.0
+V_attraction=-10.0
+J_Hund=0.0
+
+Xsite=30
+Ysite=30
+
+PBC_X=1
+PBC_Y=1
+
+
+Self_consistency=0

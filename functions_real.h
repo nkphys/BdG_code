@@ -88,5 +88,6 @@ double Lorentzian(double eta, double x);
 
 double Distance(double x1, double y1, double x2, double y2);
 double Theta(double x);
+double Fermi(double x,  double x0_, double alpha);
 
 #endif

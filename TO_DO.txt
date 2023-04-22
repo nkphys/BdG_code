@@ -1,0 +1,5 @@
+Date: 21 April/2023
+1) Add reference for Skyrmion equation
+2) Add Comments for beta and alpha in the skyrmion eq
+3) Add Spin Fermion interaction in the Ham creation
+4) If possible pass the skyrmion class to Hamiltonian class, otherwise just assume some theta/phi arrays in Hmail class 

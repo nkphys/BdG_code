@@ -8,25 +8,51 @@
 #include "functions_real.h"
 
 #include "Skyrmion.h"
+#include "Hamiltonian_TL.h"
+#include "Coordinates_TL.h"
+#include "Parameters_TL.h"
+int main(int argc, char *argv[]){
 
-int main(){
 
-
+string ex_string_original = argv[0];
+string model_inputfile = argv[1];
 
 string my_skyrmion_type="AntiSkyrmion";
 SKYRMION my_skyrmion(my_skyrmion_type);
 
-my_skyrmion.Lx=21*3;
-my_skyrmion.Ly=21*3;
-my_skyrmion.Diameter=20;
-my_skyrmion.Beta=0.2;
+my_skyrmion.Lx=51;
+my_skyrmion.Ly=51;
+my_skyrmion.Diameter=50;
+
 my_skyrmion.Spin_Size=1.0;
 
-my_skyrmion.Initialize_Skyrmion();
-my_skyrmion.Create_Skyrmion();
-my_skyrmion.Print_Skyrmion("MySkyrmion.txt");
-my_skyrmion.Skyrmion_Number_Calculate();
+my_skyrmion.vorticity=-1.0;
+my_skyrmion.helicity=0;
+my_skyrmion.polarity=-1;
 
+my_skyrmion.Initialize_Skyrmion();
+my_skyrmion.Beta=0.08;
+my_skyrmion.Create_Skyrmion();
+my_skyrmion.Skyrmion_Number_Calculate();
+my_skyrmion.Print_Skyrmion("MySkyrmion.txt");
+
+
+
+//-------------Check-------
+Parameters_TL Parameters_TL_;
+Parameters_TL_.Initialize(model_inputfile);
+
+
+Coordinates_TL Coordinates_TL_(Parameters_TL_.lx,Parameters_TL_.ly, 1);
+
+
+Hamiltonian_TL Hamiltonian_TL_(Parameters_TL_, Coordinates_TL_);
+Hamiltonian_TL_.HamilCreation();
+char Dflag='V';
+Hamiltonian_TL_.Diagonalize(Dflag);
+Hamiltonian_TL_.Print_DOS("dos_check.txt");
+
+//------------------------
 
 
 return 0;
