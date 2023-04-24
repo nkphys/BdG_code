@@ -90,6 +90,7 @@ OptimizedBeta=0.05;
 void SKYRMION::Create_Skyrmion(){
 
 
+double Radius=Radius_x;
 double offset=0.0001;
 double alpha = 1.0; //contribution decay constant used in "Fermi" function
 double sk_cent_x, sk_cent_y;
@@ -117,13 +118,14 @@ sk_cent_x = ((  (2*Radius_x + 1.0)*sk_ix) + Radius_x );
 sk_cent_y = ((  (2*Radius_y + 1.0)*sk_iy) + Radius_y );
 
 
+dis = Distance(ix*1.0, iy*1.0, sk_cent_x, sk_cent_y);
+
+
 //PBC for sites
 //sk_cent_x = sk_cent_x_temp%Lx;
 //sk_cent_y = sk_cent_y_temp%Ly;
 
-//dis = Distance(ix*1.0, iy*1.0, sk_cent_x, sk_cent_y);
-
-
+/*
 if(BraviasLattice=="SquareLattice"){
 dis = Distance(ix*1.0, iy*1.0, sk_cent_x, sk_cent_y);
 }
@@ -134,15 +136,15 @@ dis_y = (sqrt(3.0)/2.0)*(iy*1.0 - sk_cent_y);
 dis = Distance(dis_x, dis_y, 0, 0);
 }
 
-
+*/
 
 //Theta_[ix][iy] += ( 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis)) + acos(-polarity)) * Theta((Radius_x) -dis);
 
-
-/*
 Theta_[ix][iy] += ( 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis)) + acos(-polarity)) * Fermi(dis, Radius_x, alpha);
 
+
 //Find reference of following equations
+
 if ( iy<sk_cent_y ) {
 Phi_[ix][iy] += (-acos(vorticity*(ix-sk_cent_x)/dis) - helicity) * Fermi(dis, Radius_x, alpha);
 //Phi_[ix][iy] += ( -acos(vorticity*(ix-sk_cent_x)/dis) - helicity )*Theta((Radius_x) -dis);
@@ -155,9 +157,9 @@ Phi_[ix][iy] += ( acos(vorticity*(ix-sk_cent_x)/dis) - helicity ) * Fermi(dis, R
 if ( ix==sk_cent_x && iy==sk_cent_y ) {
 	Phi_[ix][iy] = helicity;
 }
-*/
 
 
+/*
 if(Skyrmion_Type=="AntiSkyrmion"){
 Theta_[ix][iy] += 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis))*Theta((Radius_x) -dis);
 
@@ -174,7 +176,7 @@ else if (iy>sk_cent_y && ix<sk_cent_x) {
 Phi_[ix][iy] += (2*PI_ - atan(  (abs(ix-sk_cent_x)+offset)/(abs(iy-sk_cent_y)+offset)  ) ) * Theta((Radius_x) -dis);
 }
 }
-
+*/
 
 if(Skyrmion_Type=="BlochSkyrmion"){
 // add here

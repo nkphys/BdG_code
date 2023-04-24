@@ -1,12 +1,17 @@
+
+PairingTerm=1
+SpinFermionTerm=1
 t_nn=1.0
 V_attraction=-10.0
-J_Hund=0.0
+J_Hund=0.5
+Delta_s_local=0.4
 
-Xsite=30
-Ysite=30
+Xsite=33
+Ysite=33
 
 PBC_X=1
 PBC_Y=1
 
 
+Temperature=0.00001
 Self_consistency=0

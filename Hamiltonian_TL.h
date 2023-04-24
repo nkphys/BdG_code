@@ -5,6 +5,7 @@
 #include "Parameters_TL.h"
 #include "Coordinates_TL.h"
 #include "Matrix.h"
+#include "Skyrmion.h"
 #define PI acos(-1.0)
 
 #ifndef Hamiltonian_TL_class
@@ -25,8 +26,8 @@ extern "C" void zgesdd_ (char *, int *, int *, std::complex<double> *, int *, do
 class Hamiltonian_TL
 {
 public:
-    Hamiltonian_TL(Parameters_TL  &Parameters__ , Coordinates_TL &Coordinates__)
-        :Coordinates_(Coordinates__),Parameters_(Parameters__)
+    Hamiltonian_TL(Parameters_TL  &Parameters__ , Coordinates_TL &Coordinates__, SKYRMION &Skyrmion__)
+        :Parameters_(Parameters__),Coordinates_(Coordinates__),Skyrmion_(Skyrmion__)
 
     {
         Initialize();
@@ -36,49 +37,30 @@ public:
 
     void Initialize();
     void HTBCreate();
+    void Add_SpinFermionTerm();
+    void Add_PairingTerm();
     void HamilCreation();
     void Diagonalize(char option);
-    void Print_DOS(string DOSfile);
+
+
+
+    bool SpinFermionTerm, PairingTerm;
+
+    Matrix<complex<double>> Pauli_z, Pauli_x, Pauli_y;
 
     Coordinates_TL &Coordinates_;
     Parameters_TL &Parameters_;
+    SKYRMION &Skyrmion_;
     int lx_, ly_, ncells_, n_orbs_;
 
     Mat_1_doub eigs_;
-    Matrix<complex<double>> HTB_;
-    Matrix<complex<double>> Ham_; 
+
+    Matrix<complex<double>> Ham_, HTB_;
 
 
 
 };
 
-
-void Hamiltonian_TL::Print_DOS(string DOSfile){
-
-
-ofstream DOSFILE_(DOSfile.c_str());
-DOSFILE_<<"#w   DOS(w)"<<endl;
-
-double w_min=eigs_[0] -1.0;
-double w_max=eigs_[eigs_.size()-1] +1.0;
-double dw=0.01;
-double eta=0.05;
-double dos_;
-
-double w_val=w_min;
-while(w_val<=w_max){
-dos_=0.0;
-for(int n=0;n<eigs_.size();n++){
-dos_ += Lorentzian(eta, w_val - eigs_[n]); 
-}
-
-DOSFILE_<<w_val<< "   "<<dos_<<endl;
-
-w_val +=dw;
-}
-
-
-}
 
 void Hamiltonian_TL::Diagonalize(char option){
 
@@ -113,14 +95,105 @@ void Hamiltonian_TL::Diagonalize(char option){
 
 
 
-void Hamiltonian_TL::HamilCreation(){
+void Hamiltonian_TL::Add_SpinFermionTerm(){
 
-Ham_=HTB_;
+
+
+int col_,row_;
+double Sz_i, Sx_i, Sy_i; 
+
+int ix, iy;
+
+for(int site=0;site<ncells_;site++){
+ix=Coordinates_.indx_cellwise_[site];
+iy=Coordinates_.indy_cellwise_[site];
+
+Sz_i = Skyrmion_.Spin_Size*cos(Skyrmion_.Theta_[ix][iy]);
+Sx_i = Skyrmion_.Spin_Size*sin(Skyrmion_.Theta_[ix][iy])*cos(Skyrmion_.Phi_[ix][iy]);
+Sx_i = Skyrmion_.Spin_Size*sin(Skyrmion_.Theta_[ix][iy])*sin(Skyrmion_.Phi_[ix][iy]);
+
+
+for(int spin_beta=0;spin_beta<2;spin_beta++){
+for(int spin_alpha=0;spin_alpha<2;spin_alpha++){
+
+col_ = site + ncells_*spin_beta;
+row_ = site + ncells_*spin_alpha;
+
+
+Ham_(row_,col_) += 0.5*0.5*Parameters_.J_Hund*(Pauli_z(spin_alpha,spin_beta)*Sz_i  + 
+                   Pauli_x(spin_alpha,spin_beta)*Sx_i +
+		   Pauli_y(spin_alpha,spin_beta)*Sy_i) ;
+
+
+Ham_(row_ + 2*ncells_,col_+2*ncells_) += -0.5*0.5*Parameters_.J_Hund*(Pauli_z(spin_alpha,spin_beta)*Sz_i  +
+                   Pauli_x(spin_alpha,spin_beta)*Sx_i +
+                   Pauli_y(spin_alpha,spin_beta)*Sy_i) ;
+
+
+
+
+}
+}
+}
+
+
+}
+
+
+void Hamiltonian_TL::Add_PairingTerm(){
+
+
+int spin_up, spin_down, col_,row_;
+spin_up=0;spin_down=1;
+for(int site=0;site<ncells_;site++){
+
+
+col_= site + ncells_*spin_down + 2*ncells_;
+row_= site + ncells_*spin_up;
+Ham_(row_,col_) += 0.5*Parameters_.Delta_s;
+
+
+col_= site + ncells_*spin_up + 2*ncells_;
+row_= site + ncells_*spin_down;
+Ham_(row_,col_) += -0.5*Parameters_.Delta_s;
+
+col_= site + ncells_*spin_up;
+row_= site + ncells_*spin_down + 2*ncells_;
+Ham_(row_,col_) += 0.5*Parameters_.Delta_s;
+
+col_= site + ncells_*spin_down;
+row_= site + ncells_*spin_up + 2*ncells_;
+Ham_(row_,col_) += -0.5*Parameters_.Delta_s;
 
 }
 
 
 
+
+}
+
+
+
+
+
+
+
+
+void Hamiltonian_TL::HamilCreation(){
+Ham_=HTB_;
+
+
+if(SpinFermionTerm){
+Add_SpinFermionTerm();
+}
+
+
+if(PairingTerm){
+Add_PairingTerm();
+}
+
+
+}
 
 
 void Hamiltonian_TL::Initialize()
@@ -130,10 +203,30 @@ void Hamiltonian_TL::Initialize()
     lx_ = Parameters_.lx;
     ncells_ = lx_ * ly_;
     n_orbs_ = 1;
-    int space = 2 * ncells_;
+    int space = 2 * ncells_ *2 ;
 
     HTB_.resize(space, space);
     Ham_.resize(space, space);
+
+
+   Pauli_z.resize(2,2);
+   Pauli_x.resize(2,2);
+   Pauli_y.resize(2,2);
+
+
+   Pauli_z.fill(0);
+   Pauli_z(0,0)=1.0;Pauli_z(1,1)=-1.0;
+
+   Pauli_x.fill(0);
+   Pauli_x(0,1)=1.0;Pauli_x(1,0)=1.0;
+
+   Pauli_y.fill(0);
+   Pauli_y(0,1)=-1.0*iota_comp;Pauli_y(1,0)=1.0*iota_comp;
+
+
+   SpinFermionTerm=Parameters_.SpinFermionTerm;
+   PairingTerm=Parameters_.PairingTerm;
+
    
 } // ----------
 
@@ -143,8 +236,8 @@ Mat_1_int t_neighs;
 Mat_1_doub t_hoppings;
 
 
-t_neighs.push_back(0);t_neighs.push_back(7);t_neighs.push_back(3);
-t_hoppings.push_back(Parameters_.t_nn); t_hoppings.push_back(Parameters_.t_nn); t_hoppings.push_back(Parameters_.t_nn);
+t_neighs.push_back(0);t_neighs.push_back(2);t_neighs.push_back(7);
+t_hoppings.push_back(Parameters_.t_nn); t_hoppings.push_back(Parameters_.t_nn);t_hoppings.push_back(Parameters_.t_nn);
 
 int m,a,b;
 for(int l=0;l<ncells_;l++){
@@ -161,9 +254,13 @@ a = l + ncells_*spin;
 b = m + ncells_*spin;
 
 assert(a!=b);
-
-HTB_(b,a) = -1.0*t_hoppings[neigh];
+HTB_(b,a) = -1.0*t_hoppings[neigh]*0.5;
 HTB_(a,b) = conj(HTB_(b,a)); 
+
+HTB_(b+2*ncells_,a+2*ncells_) = 1.0*t_hoppings[neigh]*0.5;
+HTB_(a+2*ncells_,b+2*ncells_) = conj(HTB_(b+2*ncells_,a+2*ncells_));
+
+
 }
 }}
 

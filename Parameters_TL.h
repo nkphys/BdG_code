@@ -19,6 +19,7 @@ public:
     double eta, domega;
 
     double Temperature;
+    double Boltzman_Const;
 
     double Total_Particles;
     int IterMax;
@@ -28,6 +29,10 @@ public:
     bool Self_consistency;
 
 
+    double Delta_s;
+
+    bool SpinFermionTerm, PairingTerm;
+
     void Initialize(string inputfile_);
     double matchstring(string file, string match);
     string matchstring2(string file, string match);
@@ -36,6 +41,12 @@ public:
 
 void Parameters_TL::Initialize(string inputfile_)
 {
+
+
+    Boltzman_Const=1.0;
+    mus=0.0;
+
+
 
 
     cout << "____________________________________" << endl;
@@ -50,7 +61,12 @@ void Parameters_TL::Initialize(string inputfile_)
 
     V_attract = double(matchstring(inputfile_, "V_attraction"));
     J_Hund = double(matchstring(inputfile_, "J_Hund"));
+    Delta_s = double(matchstring(inputfile_, "Delta_s_local"));
 
+
+    Temperature = double(matchstring(inputfile_, "Temperature"));
+    beta_T = Boltzman_Const/Temperature;
+    
 
     lx = int(matchstring(inputfile_, "Xsite"));
     ly = int(matchstring(inputfile_, "Ysite"));
@@ -83,6 +99,24 @@ void Parameters_TL::Initialize(string inputfile_)
     else{
         Self_consistency=false;
     }
+
+
+    double SpinFermionTerm_double;
+    SpinFermionTerm_double=double(matchstring(inputfile_,"SpinFermionTerm"));
+    if(SpinFermionTerm_double==1){
+        SpinFermionTerm=true;}
+    else{
+        SpinFermionTerm=false;
+    }
+
+    double PairingTerm_double;
+    PairingTerm_double=double(matchstring(inputfile_,"PairingTerm"));
+    if(PairingTerm_double==1){
+        PairingTerm=true;}
+    else{
+        PairingTerm=false;
+    }
+
 
     cout << "____________________________________" << endl;
 }
