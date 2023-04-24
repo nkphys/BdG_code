@@ -95,7 +95,7 @@ double alpha = 1.0; //contribution decay constant used in "Fermi" function
 double sk_cent_x, sk_cent_y;
 double sk_cent_x_temp, sk_cent_y_temp;
 double dis;
-
+double dis_x, dis_y;
 
 /*
 vorticity = 1.0 (skyr) ; vorticity = -1.0 (antiskyr)
@@ -125,14 +125,15 @@ sk_cent_y = ((  (2*Radius_y + 1.0)*sk_iy) + Radius_y );
 
 
 if(BraviasLattice=="SquareLattice"){
-dis = Distance(ix*1.0, iy*1.0, sk_cent_x, sk_cent_y);
+//dis = Distance(ix*1.0, iy*1.0, sk_cent_x, sk_cent_y);
+dis_x = abs(ix*1.0 - sk_cent_x);
+dis_y = abs(iy*1.0 - sk_cent_y);
 }
 if(BraviasLattice=="TriangularLattice"){
-double dis_x, dis_y;
-dis_x = (ix*1.0 - sk_cent_x) + ((iy*1.0 - sk_cent_y)*0.5);
-dis_y = (sqrt(3.0)/2.0)*(iy*1.0 - sk_cent_y);
-dis = Distance(dis_x, dis_y, 0, 0);
+dis_x = abs((ix*1.0 - sk_cent_x) + ((iy*1.0 - sk_cent_y)*0.5));
+dis_y = abs((sqrt(3.0)/2.0)*(iy*1.0 - sk_cent_y));
 }
+dis = Distance(dis_x, dis_y, 0, 0);
 
 
 
@@ -162,16 +163,16 @@ if(Skyrmion_Type=="AntiSkyrmion"){
 Theta_[ix][iy] += 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis))*Theta((Radius_x) -dis);
 
 if( iy>=sk_cent_y && ix>=sk_cent_x ){
-Phi_[ix][iy] += (atan(  (ix-sk_cent_x+offset)/(iy-sk_cent_y+offset)  ) ) * Theta((Radius_x) -dis);
+Phi_[ix][iy] += (atan(  (dis_x+offset)/(dis_y+offset)  ) ) * Theta((Radius_x) -dis);
 }
 else if (iy<sk_cent_y && ix>=sk_cent_x){
-Phi_[ix][iy] += (PI_ - atan(  (abs(ix-sk_cent_x)+offset)/(abs(iy-sk_cent_y)+offset)  ) ) * Theta((Radius_x) -dis);
+Phi_[ix][iy] += (PI_ - atan(  (abs(dis_x)+offset)/(abs(dis_y)+offset)  ) ) * Theta((Radius_x) -dis);
 }
 else if (iy<=sk_cent_y && ix<sk_cent_x){
-Phi_[ix][iy] += (PI_ + atan(  (abs(ix-sk_cent_x)+offset)/(abs(iy-sk_cent_y)+offset)  ) ) * Theta((Radius_x) -dis);
+Phi_[ix][iy] += (PI_ + atan(  (abs(dis_x)+offset)/(abs(dis_y)+offset)  ) ) * Theta((Radius_x) -dis);
 }
 else if (iy>sk_cent_y && ix<sk_cent_x) {
-Phi_[ix][iy] += (2*PI_ - atan(  (abs(ix-sk_cent_x)+offset)/(abs(iy-sk_cent_y)+offset)  ) ) * Theta((Radius_x) -dis);
+Phi_[ix][iy] += (2*PI_ - atan(  (abs(dis_x)+offset)/(abs(dis_y)+offset)  ) ) * Theta((Radius_x) -dis);
 }
 }
 
@@ -180,7 +181,25 @@ if(Skyrmion_Type=="BlochSkyrmion"){
 // add here
 }
 
-if(Skyrmion_Type=="NormalSkyrmion"){
+if(Skyrmion_Type=="NeelSkyrmion"){
+
+Theta_[ix][iy] += 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis))*Theta((Radius_x) -dis);
+
+if( iy>=sk_cent_y && ix>=sk_cent_x ){
+Phi_[ix][iy] += (atan(  (dis_y+offset)/(dis_x+offset)  ) ) * Theta((Radius_x) -dis);
+}
+else if (ix<sk_cent_x && iy>=sk_cent_y){
+Phi_[ix][iy] += (PI_ -  atan(  (abs(dis_y)+offset)/(abs(dis_x)+offset)  ) ) * Theta((Radius_x) -dis);
+}
+else if (iy<sk_cent_y && ix<=sk_cent_x){
+Phi_[ix][iy] += (PI_*1.0 + atan(  (abs(dis_y)+offset)/(abs(dis_x)+offset)  ) ) * Theta((Radius_x) -dis);
+}
+else if (iy<sk_cent_y && ix>sk_cent_x) {
+Phi_[ix][iy] += (2*PI_ - atan(  (abs(dis_y)+offset)/(abs(dis_x)+offset)  ) ) * Theta((Radius_x) -dis);
+}
+
+
+
 //add Here
 }
 

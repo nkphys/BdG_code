@@ -33,7 +33,7 @@ my_skyrmion.helicity=0;
 my_skyrmion.polarity=-1;
 
 my_skyrmion.Initialize_Skyrmion();
-my_skyrmion.Beta=0.5;
+my_skyrmion.Beta=0.1;
 my_skyrmion.BraviasLattice="TriangularLattice";
 
 my_skyrmion.Create_Skyrmion();
