@@ -12,7 +12,7 @@ public:
     bool PBC_X, PBC_Y;
 
     double t_nn;
-    double V_attract, J_Hund;
+    double V_attract, J_Hund, mu;
     
     //For observse
     double beta_T, mus;
@@ -31,7 +31,7 @@ public:
 
     double Delta_s;
 
-    bool SpinFermionTerm, PairingTerm;
+    bool SpinFermionTerm, PairingTerm, ChemicalPotentialTerm;
 
     void Initialize(string inputfile_);
     double matchstring(string file, string match);
@@ -62,6 +62,7 @@ void Parameters_TL::Initialize(string inputfile_)
     V_attract = double(matchstring(inputfile_, "V_attraction"));
     J_Hund = double(matchstring(inputfile_, "J_Hund"));
     Delta_s = double(matchstring(inputfile_, "Delta_s_local"));
+    mu = double(matchstring(inputfile_, "mu"));
 
 
     Temperature = double(matchstring(inputfile_, "Temperature"));
@@ -115,6 +116,14 @@ void Parameters_TL::Initialize(string inputfile_)
         PairingTerm=true;}
     else{
         PairingTerm=false;
+    }
+
+    double ChemicalPotentialTerm_double;
+    ChemicalPotentialTerm_double=double(matchstring(inputfile_,"ChemicalPotentialTerm"));
+    if(ChemicalPotentialTerm_double==1){
+        ChemicalPotentialTerm=true;}
+    else{
+        ChemicalPotentialTerm=false;
     }
 
 

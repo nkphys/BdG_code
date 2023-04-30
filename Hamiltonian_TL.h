@@ -39,12 +39,13 @@ public:
     void HTBCreate();
     void Add_SpinFermionTerm();
     void Add_PairingTerm();
+    void Add_ChemicalPotentialTerm();
     void HamilCreation();
     void Diagonalize(char option);
 
 
 
-    bool SpinFermionTerm, PairingTerm;
+    bool SpinFermionTerm, PairingTerm, ChemicalPotentialTerm;
 
     Matrix<complex<double>> Pauli_z, Pauli_x, Pauli_y;
 
@@ -88,7 +89,7 @@ void Hamiltonian_TL::Diagonalize(char option){
         perror("diag: zheev: failed with info!=0.\n");
     }
 
-    // Ham_.print();
+//     Ham_.print();
 
 }
 
@@ -173,10 +174,24 @@ Ham_(row_,col_) += -0.5*Parameters_.Delta_s;
 }
 
 
+void Hamiltonian_TL::Add_ChemicalPotentialTerm(){
+
+int a,b;
+for(int l=0;l<ncells_;l++){
+for (int spin=0;spin<2;spin++){
+
+a = l + ncells_*spin;
+b = l + ncells_*spin;
+
+// assert(a!=b);
+Ham_(b,a) += -1.0*Parameters_.mu*0.5;
+Ham_(b+2*ncells_,a+2*ncells_) += 1.0*Parameters_.mu*0.5;
 
 
+}
+}
 
-
+}
 
 
 void Hamiltonian_TL::HamilCreation(){
@@ -191,6 +206,26 @@ Add_SpinFermionTerm();
 if(PairingTerm){
 Add_PairingTerm();
 }
+
+if(ChemicalPotentialTerm){
+Add_ChemicalPotentialTerm();
+}
+
+
+
+ly_ = Parameters_.ly;
+lx_ = Parameters_.lx;
+ncells_ = lx_ * ly_;
+n_orbs_ = 1;
+int space = 2 * ncells_ *2 ;
+
+// Ham_.print();
+/*
+for (int i=0; i<space; i++){
+  for (int j=0; j<space; j++){
+    cout<<i<<"    "<<j<<"    "<<Ham_(i,j)<<endl;
+  }
+}*/
 
 
 }
@@ -226,6 +261,7 @@ void Hamiltonian_TL::Initialize()
 
    SpinFermionTerm=Parameters_.SpinFermionTerm;
    PairingTerm=Parameters_.PairingTerm;
+   ChemicalPotentialTerm=Parameters_.ChemicalPotentialTerm;
 
    
 } // ----------

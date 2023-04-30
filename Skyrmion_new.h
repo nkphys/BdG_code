@@ -92,7 +92,7 @@ void SKYRMION::Create_Skyrmion(){
 
 double Radius=Radius_x;
 double offset=0.0001;
-double alpha = 1.0; //contribution decay constant used in "Fermi" function
+double alpha = 0.01; //contribution decay constant used in "Fermi" function
 double sk_cent_x, sk_cent_y;
 double sk_cent_x_temp, sk_cent_y_temp;
 double dis;

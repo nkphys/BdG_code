@@ -19,11 +19,11 @@ int main(int argc, char *argv[]){
 string ex_string_original = argv[0];
 string model_inputfile = argv[1];
 
-string my_skyrmion_type="AntiSkyrmion";
+string my_skyrmion_type="NeelSkyrmion";
 SKYRMION my_skyrmion(my_skyrmion_type);
 
-my_skyrmion.Lx=11*3;
-my_skyrmion.Ly=11*3;
+my_skyrmion.Lx=11*4;
+my_skyrmion.Ly=11*10;
 my_skyrmion.Diameter=10;
 
 my_skyrmion.Spin_Size=1.0;
@@ -33,15 +33,15 @@ my_skyrmion.helicity=0;
 my_skyrmion.polarity=-1;
 
 my_skyrmion.Initialize_Skyrmion();
-my_skyrmion.Beta=0.1;
+my_skyrmion.Beta=0.157;
 my_skyrmion.BraviasLattice="TriangularLattice";
 
 my_skyrmion.Create_Skyrmion();
-//my_skyrmion.Skyrmion_Number_Calculate();
+my_skyrmion.Skyrmion_Number_Calculate();
 my_skyrmion.Print_Skyrmion("MySkyrmion.txt");
 
 
-assert(false);
+// assert(false);
 
 //-------------Check-------
 Parameters_TL Parameters_TL_;

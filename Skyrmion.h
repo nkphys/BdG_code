@@ -117,13 +117,6 @@ sk_cent_x = ((  (2*Radius_x + 1.0)*sk_ix) + Radius_x );
 sk_cent_y = ((  (2*Radius_y + 1.0)*sk_iy) + Radius_y );
 
 
-//PBC for sites
-//sk_cent_x = sk_cent_x_temp%Lx;
-//sk_cent_y = sk_cent_y_temp%Ly;
-
-//dis = Distance(ix*1.0, iy*1.0, sk_cent_x, sk_cent_y);
-
-
 if(BraviasLattice=="SquareLattice"){
 //dis = Distance(ix*1.0, iy*1.0, sk_cent_x, sk_cent_y);
 dis_x = abs(ix*1.0 - sk_cent_x);
@@ -138,7 +131,6 @@ dis = Distance(dis_x, dis_y, 0, 0);
 
 
 //Theta_[ix][iy] += ( 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis)) + acos(-polarity)) * Theta((Radius_x) -dis);
-
 
 /*
 Theta_[ix][iy] += ( 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis)) + acos(-polarity)) * Fermi(dis, Radius_x, alpha);
@@ -159,9 +151,10 @@ if ( ix==sk_cent_x && iy==sk_cent_y ) {
 */
 
 
-if(Skyrmion_Type=="AntiSkyrmion"){
-Theta_[ix][iy] += 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis))*Theta((Radius_x) -dis);
+if(Skyrmion_Type=="AntiSkyrmion")
+{
 
+Theta_[ix][iy] += 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis))*Theta((Radius_x) -dis);
 if( iy>=sk_cent_y && ix>=sk_cent_x ){
 Phi_[ix][iy] += (atan(  (dis_x+offset)/(dis_y+offset)  ) ) * Theta((Radius_x) -dis);
 }
@@ -174,17 +167,32 @@ Phi_[ix][iy] += (PI_ + atan(  (abs(dis_x)+offset)/(abs(dis_y)+offset)  ) ) * The
 else if (iy>sk_cent_y && ix<sk_cent_x) {
 Phi_[ix][iy] += (2*PI_ - atan(  (abs(dis_x)+offset)/(abs(dis_y)+offset)  ) ) * Theta((Radius_x) -dis);
 }
+
 }
 
+if (Skyrmion_Type == "BlochSkyrmion")
+{
 
-if(Skyrmion_Type=="BlochSkyrmion"){
-// add here
+Theta_[ix][iy] += 2.0 * atan(Radius_x / dis) * exp(Beta * (-1.0 * dis)) * Theta((Radius_x)-dis);
+if (iy >= sk_cent_y && ix >= sk_cent_x) {
+Phi_[ix][iy] += (atan((dis_y + offset) / (dis_x + offset)) + PI_ / 2.0) * Theta((Radius_x)-dis);
+}
+else if (ix < sk_cent_x && iy >= sk_cent_y) {
+Phi_[ix][iy] += (PI_ - atan((abs(dis_y) + offset) / (abs(dis_x) + offset)) + PI_ / 2.0) * Theta((Radius_x)-dis);
+}
+else if (iy < sk_cent_y && ix <= sk_cent_x) {
+Phi_[ix][iy] += (PI_ * 1.0 + atan((abs(dis_y) + offset) / (abs(dis_x) + offset)) + PI_ / 2.0) * Theta((Radius_x)-dis);
+}
+else if (iy < sk_cent_y && ix > sk_cent_x) {
+Phi_[ix][iy] += (2 * PI_ - atan((abs(dis_y) + offset) / (abs(dis_x) + offset)) + PI_ / 2.0) * Theta((Radius_x)-dis);
 }
 
-if(Skyrmion_Type=="NeelSkyrmion"){
+}
+
+if(Skyrmion_Type=="NeelSkyrmion")
+{
 
 Theta_[ix][iy] += 2.0*atan(Radius_x/dis)*exp(Beta*(-1.0*dis))*Theta((Radius_x) -dis);
-
 if( iy>=sk_cent_y && ix>=sk_cent_x ){
 Phi_[ix][iy] += (atan(  (dis_y+offset)/(dis_x+offset)  ) ) * Theta((Radius_x) -dis);
 }
@@ -198,25 +206,8 @@ else if (iy<sk_cent_y && ix>sk_cent_x) {
 Phi_[ix][iy] += (2*PI_ - atan(  (abs(dis_y)+offset)/(abs(dis_x)+offset)  ) ) * Theta((Radius_x) -dis);
 }
 
-
-
-//add Here
 }
 
-//similarly more Skyrmions if needed ex. bimeron etc.
-
-/*
-if(iy<sk_cent_y){
-Phi_[ix][iy] -= acos((ix-sk_cent_x+offset)/(dis+offset))*Theta((Radius_x) -dis);
-}
-else{
-Phi_[ix][iy] += acos((ix-sk_cent_x+offset)/(dis+offset))*Theta((Radius_x) -dis);
-}
-*/
-
-// if(Theta((Radius_x) -dis)!=0.0){
-// cout<<ix<<"   "<<iy<<"  "<<sk_ix<<"  "<<sk_iy<<"  "<<sk_cent_x<<"   "<<sk_cent_y<<endl;
-// }
 
 }
 }
@@ -225,7 +216,6 @@ Phi_[ix][iy] += acos((ix-sk_cent_x+offset)/(dis+offset))*Theta((Radius_x) -dis);
 }
 
 }
-
 
 
 void SKYRMION::Print_Skyrmion(string SkyrmionFilepath){

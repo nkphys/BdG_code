@@ -7,7 +7,7 @@ CC = g++ $(OPTFLAG) -std=c++11
 CFLAGS = -c
 #-DUSE_COMPLEX
 
-LDFLAGS  = -llapack -lblas
+LDFLAGS  = -lmkl_sequential -lmkl_rt -lmkl_core
 
 ### --- turn on for debugging -----------
 CPPFLAGS += -Isrc
@@ -32,3 +32,4 @@ main.o : main.cpp
 
 
 ######## End of Makefile ########
+#### gfortran main_narayan.f90 -lmkl_sequential -lmkl_rt -lmkl_core -mcmodel=large -o  '+str(i)+'.out''')'
