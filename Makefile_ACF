@@ -7,7 +7,7 @@ CC = g++ $(OPTFLAG) -std=c++11
 CFLAGS = -c
 #-DUSE_COMPLEX
 
-LDFLAGS  = -llapack -lblas
+LDFLAGS  = -lmkl_sequential -lmkl_rt -lmkl_core
 
 ### --- turn on for debugging -----------
 CPPFLAGS += -Isrc

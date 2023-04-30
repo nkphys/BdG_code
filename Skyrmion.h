@@ -151,6 +151,22 @@ if ( ix==sk_cent_x && iy==sk_cent_y ) {
 */
 
 
+if(Skyrmion_Type=="PRB93_224505_Skyrmion"){
+
+/*
+int n_WN =2; //Winding number
+double r0_ = 2.0;
+int p =
+double fr;
+
+fr = Funtion_PW(dis,r0_,);
+
+*/
+
+}
+
+
+
 if(Skyrmion_Type=="AntiSkyrmion")
 {
 

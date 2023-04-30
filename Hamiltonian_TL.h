@@ -127,10 +127,13 @@ Ham_(row_,col_) += 0.5*0.5*Parameters_.J_Hund*(Pauli_z(spin_alpha,spin_beta)*Sz_
 
 
 Ham_(row_ + 2*ncells_,col_+2*ncells_) += -0.5*0.5*Parameters_.J_Hund*(Pauli_z(spin_alpha,spin_beta)*Sz_i  +
-                   Pauli_x(spin_alpha,spin_beta)*Sx_i +
-                   Pauli_y(spin_alpha,spin_beta)*Sy_i) ;
+                   Pauli_x(spin_beta,spin_alpha)*Sx_i +
+                   Pauli_y(spin_beta,spin_alpha)*Sy_i) ;
 
 
+//Ham_(row_ + 2*ncells_,col_+2*ncells_) += -0.5*0.5*Parameters_.J_Hund*(Pauli_z(spin_alpha,spin_beta)*Sz_i  +
+ //                  Pauli_x(spin_alpha,spin_beta)*Sx_i +
+   //                Pauli_y(spin_alpha,spin_beta)*Sy_i) ;
 
 
 }

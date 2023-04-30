@@ -1,0 +1,20 @@
+____________________________________
+Reading the inputfile for specific model: input.inp
+____________________________________
+t_nn = 1
+t_nn = 1
+V_attraction = 0
+J_Hund = 1.2
+Delta_s_local = 0.4
+mu = 0
+Temperature = 1e-05
+Xsite = 57
+Ysite = 190
+PBC_X = 1
+PBC_Y = 0
+TotalNumberOf Unit cells = 10830
+Self_consistency = 0
+SpinFermionTerm = 1
+PairingTerm = 1
+ChemicalPotentialTerm = 1
+____________________________________
