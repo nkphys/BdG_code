@@ -23,30 +23,32 @@ public:
 	    :Skyrmion_Type(Skyrmion_Type_)
 	{
 	}
-	
+
 
 	int Diameter;
 	double Radius_x, Radius_y; //Radius of skyrmion
 	double Beta; //decay coeffcient
-		
+
 	double OptimizedBeta;
 	int No_of_Sk_x, No_of_Sk_y;
-	int Lx, Ly;	
-	 
+	int Lx, Ly;
+
 	Mat_2_doub Theta_, Phi_;
 	double Spin_Size;
 
 	string BraviasLattice;
-		
+
 	double Skyrmion_number;
-	double vorticity, helicity, polarity; 
+  double Magnetization_x, Magnetization_y, Magnetization_z;
+	double vorticity, helicity, polarity;
 	string Skyrmion_Type;
-	
-	void Initialize_Skyrmion();	
+
+	void Initialize_Skyrmion();
 	void Create_Skyrmion();
 	void Print_Skyrmion(string SkyrmionFilepath);
 // Need to add skyrmion number routine
 	void Skyrmion_Number_Calculate();
+  void Magnetization_Calculate();
 };
 
 
@@ -255,7 +257,11 @@ outfile<<endl;
 
 }
 
-outfile<<"#Skyrmion number = "<<Skyrmion_number<<endl; 
+outfile<<"#Skyrmion number = "<<Skyrmion_number<<endl;
+outfile<<endl;
+
+outfile<<"#Net Magnetization:"<<endl;
+outfile<<"Magnetization_x = "<<Magnetization_x<<";  "<<"Magnetization_y = "<<Magnetization_y<<";  "<<"Magnetization_z = "<<Magnetization_z<<endl;
 
 }
 
@@ -273,17 +279,17 @@ for (int ix = 0; ix < Lx; ix++) {
 		}
 }
 
-double** sy = new double*[Lx];
+Mat_2_doub sy; sy.resize(Lx);
 for (int ix = 0; ix < Lx; ix++) {
-		sy[ix] = new double[Ly];
+		sy[ix].resize(Ly);
 		for (int iy = 0; iy < Ly; iy++) {
 				sy[ix][iy] = 0.0;
 		}
 }
 
-double** sz = new double*[Lx];
+Mat_2_doub sz; sz.resize(Lx);
 for (int ix = 0; ix < Lx; ix++) {
-		sz[ix] = new double[Ly];
+		sz[ix].resize(Ly);
 		for (int iy = 0; iy < Ly; iy++) {
 				sz[ix][iy] = 0.0;
 		}
@@ -322,5 +328,26 @@ for (int ix = 0 ; ix < Lx ; ix++){
 Skyrmion_number=chi;
 
 }
+
+
+void SKYRMION::Magnetization_Calculate(){
+double mx, my, mz;
+
+mx = 0.0; my = 0.0; mz = 0.0;
+
+for (int ix = 0 ; ix < Lx ; ix++){
+	for (int iy = 0 ; iy < Ly ; iy++){
+    mx = mx + Spin_Size*sin(Theta_[ix][iy])*cos(Phi_[ix][iy]);
+    my = my + Spin_Size*sin(Theta_[ix][iy])*sin(Phi_[ix][iy]);
+    mz = mz + Spin_Size*cos(Theta_[ix][iy]);
+	}
+}
+
+Magnetization_x = mx;
+Magnetization_y = my;
+Magnetization_z = mz;
+
+}
+
 
 #endif

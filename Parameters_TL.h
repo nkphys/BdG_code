@@ -13,6 +13,7 @@ public:
 
     double t_nn;
     double V_attract, J_Hund, mu;
+    int JJ_width;
     
     //For observse
     double beta_T, mus;
@@ -33,7 +34,7 @@ public:
 
     double Delta_s;
 
-    bool SpinFermionTerm, PairingTerm, ChemicalPotentialTerm;
+    bool SpinFermionTerm, PairingTerm, JJ_Channel, ChemicalPotentialTerm;
 
     void Initialize(string inputfile_);
     double matchstring(string file, string match);
@@ -65,6 +66,7 @@ void Parameters_TL::Initialize(string inputfile_)
     J_Hund = double(matchstring(inputfile_, "J_Hund"));
     Delta_s = double(matchstring(inputfile_, "Delta_s_local"));
     mu = double(matchstring(inputfile_, "mu"));
+    JJ_width = int(matchstring(inputfile_, "JJ_width"));
 
 
     Temperature = double(matchstring(inputfile_, "Temperature"));
@@ -127,6 +129,14 @@ void Parameters_TL::Initialize(string inputfile_)
         PairingTerm=true;}
     else{
         PairingTerm=false;
+    }
+    
+    double JJ_Channel_double;
+    JJ_Channel_double=double(matchstring(inputfile_,"JJ_Channel"));
+    if(JJ_Channel_double==1){
+        JJ_Channel=true;}
+    else{
+        JJ_Channel=false;
     }
 
     double ChemicalPotentialTerm_double;

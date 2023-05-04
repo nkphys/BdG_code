@@ -39,8 +39,8 @@ public:
     void HTBCreate();
 	
     void Add_SpinFermionTerm();
-	
     void Add_PairingTerm();
+    void Add_JJ_Channel();
     void Add_ChemicalPotentialTerm();
     void HamilCreation();
     void Diagonalize(char option);
@@ -49,7 +49,7 @@ public:
     bool BdG_bool;
     double factor_;
 
-    bool SpinFermionTerm, PairingTerm, ChemicalPotentialTerm;
+    bool SpinFermionTerm, PairingTerm, JJ_Channel, ChemicalPotentialTerm;
 
     Matrix<complex<double>> Pauli_z, Pauli_x, Pauli_y;
 
@@ -176,10 +176,44 @@ Ham_(row_,col_) += -factor_*Parameters_.Delta_s;
 
 }
 
-
-
-
 }
+
+
+
+void Hamiltonian_TL::Add_JJ_Channel(){                                                                                            
+                                                                                                                                  
+assert(BdG_bool);
+int spin_up, spin_down, col_,row_;                                                                                                
+spin_up=0;spin_down=1;                                                                                                            
+                                                                                                                                  
+  for(int site=0;site<ncells_;site++){                                                                                            
+                                                                                                                                  
+    int ix = Coordinates_.indx_basiswise(site);                                                                                                 
+    int W_left = static_cast<int>((lx_ - Parameters_.JJ_width)/2.0);                                                                                 
+    int W_right = static_cast<int>((lx_ + Parameters_.JJ_width)/2.0);                                                                                
+                                                                                                                                  
+    if ( (ix > W_left) && (ix <= W_left) ){                                                                                       
+      col_= site + ncells_*spin_down + 2*ncells_;                                                                                 
+      row_= site + ncells_*spin_up;                                                                                               
+      Ham_(row_,col_) += 0.0*Parameters_.Delta_s;                                                                                 
+                                                                                                                                  
+      col_= site + ncells_*spin_up + 2*ncells_;                                                                                   
+      row_= site + ncells_*spin_down;                                                                                             
+      Ham_(row_,col_) += -0.0*Parameters_.Delta_s;                                                                                
+                                                                                                                                  
+      col_= site + ncells_*spin_up;                                                                                               
+      row_= site + ncells_*spin_down + 2*ncells_;                                                                                 
+      Ham_(row_,col_) += 0.0*Parameters_.Delta_s;                                                                                 
+                                                                                                                                  
+      col_= site + ncells_*spin_down;                                                                                             
+      row_= site + ncells_*spin_up + 2*ncells_;                                                                                   
+      Ham_(row_,col_) += -0.0*Parameters_.Delta_s;                                                                                
+    }                                                                                                                             
+                                                                                                                                  
+  }                                                                                                                               
+                                                                                                                                  
+}
+
 
 
 void Hamiltonian_TL::Add_ChemicalPotentialTerm(){
@@ -207,15 +241,17 @@ Ham_(b+2*ncells_,a+2*ncells_) += 1.0*Parameters_.mu*factor_;
 void Hamiltonian_TL::HamilCreation(){
 Ham_=HTB_;
 
-
 if(SpinFermionTerm){
 Add_SpinFermionTerm();
 }
 
-
 if(PairingTerm && BdG_bool){
 Add_PairingTerm();
 }
+
+if(JJ_Channel && BdG_bool){                                                                                                                   
+Add_JJ_Channel();                                                                                                                 
+} 
 
 if(ChemicalPotentialTerm){
 Add_ChemicalPotentialTerm();
@@ -228,7 +264,6 @@ for (int i=0; i<space; i++){
     cout<<i<<"    "<<j<<"    "<<Ham_(i,j)<<endl;
   }
 }*/
-
 
 }
 
@@ -274,6 +309,7 @@ void Hamiltonian_TL::Initialize()
 
    SpinFermionTerm=Parameters_.SpinFermionTerm;
    PairingTerm=Parameters_.PairingTerm;
+   JJ_Channel=Parameters_.JJ_Channel;
    ChemicalPotentialTerm=Parameters_.ChemicalPotentialTerm;
 
    
@@ -319,8 +355,6 @@ HTB_(a+2*ncells_,b+2*ncells_) = conj(HTB_(b+2*ncells_,a+2*ncells_));
 
 
 }
-
-
 
 
 

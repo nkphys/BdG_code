@@ -22,8 +22,8 @@ string model_inputfile = argv[1];
 string my_skyrmion_type="NeelSkyrmion";
 SKYRMION my_skyrmion(my_skyrmion_type);
 
-my_skyrmion.Lx=7*3;
-my_skyrmion.Ly=7*7;
+my_skyrmion.Lx=7*2;
+my_skyrmion.Ly=7*3;
 my_skyrmion.Diameter=6;
 
 my_skyrmion.Spin_Size=1.0;
@@ -38,6 +38,7 @@ my_skyrmion.BraviasLattice="TriangularLattice";
 
 my_skyrmion.Create_Skyrmion();
 my_skyrmion.Skyrmion_Number_Calculate();
+my_skyrmion.Magnetization_Calculate();
 my_skyrmion.Print_Skyrmion("MySkyrmion.txt");
 
  
