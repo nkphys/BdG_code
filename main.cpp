@@ -22,9 +22,9 @@ string model_inputfile = argv[1];
 string my_skyrmion_type="NeelSkyrmion";
 SKYRMION my_skyrmion(my_skyrmion_type);
 
-my_skyrmion.Lx=57;
-my_skyrmion.Ly=190;
-my_skyrmion.Diameter=18;
+my_skyrmion.Lx=7*3;
+my_skyrmion.Ly=7*7;
+my_skyrmion.Diameter=6;
 
 my_skyrmion.Spin_Size=1.0;
 
@@ -33,7 +33,7 @@ my_skyrmion.helicity=0;
 my_skyrmion.polarity=-1;
 
 my_skyrmion.Initialize_Skyrmion();
-my_skyrmion.Beta=0.25;
+my_skyrmion.Beta=0.6;
 my_skyrmion.BraviasLattice="TriangularLattice";
 
 my_skyrmion.Create_Skyrmion();
@@ -62,7 +62,8 @@ Observables_TL Observables_TL_(Parameters_TL_, Coordinates_TL_, Hamiltonian_TL_)
 
 Observables_TL_.Print_Eigvals("Eigenvals.txt");
 Observables_TL_.Print_DOS("dos_check.txt");
-//Observables_TL_.Calculate_Conductance();
+
+Observables_TL_.Calculate_Akxw_ribbon();
 
 //------------------------
 

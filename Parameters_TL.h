@@ -18,6 +18,8 @@ public:
     double beta_T, mus;
     double eta, domega;
 
+    double BdG_double;
+    bool BdG_bool;
     double Temperature;
     double Boltzman_Const;
 
@@ -72,6 +74,15 @@ void Parameters_TL::Initialize(string inputfile_)
     lx = int(matchstring(inputfile_, "Xsite"));
     ly = int(matchstring(inputfile_, "Ysite"));
 
+
+
+    BdG_double = double(matchstring(inputfile_,"BdG_bool"));
+    if(BdG_double==1.0){
+	BdG_bool=true;
+	}
+	else{
+	BdG_bool=false;
+	}
 
     BoundaryConnection_X = double(matchstring(inputfile_, "PBC_X"));
     BoundaryConnection_Y = double(matchstring(inputfile_, "PBC_Y"));

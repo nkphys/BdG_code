@@ -4,13 +4,14 @@ SpinFermionTerm=1
 ChemicalPotentialTerm=1
 t_nn=1
 V_attraction=0.0
-J_Hund=1.2
-Delta_s_local=0.4
-mu=0
+J_Hund=0.5
+Delta_s_local=0.26
+mu=-5.5
 
-Xsite=57
-Ysite=190
+Xsite=21
+Ysite=49
 
+BdG_bool=1
 PBC_X=1
 PBC_Y=0
 

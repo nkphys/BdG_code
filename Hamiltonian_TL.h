@@ -37,13 +37,17 @@ public:
 
     void Initialize();
     void HTBCreate();
+	
     void Add_SpinFermionTerm();
+	
     void Add_PairingTerm();
     void Add_ChemicalPotentialTerm();
     void HamilCreation();
     void Diagonalize(char option);
 
 
+    bool BdG_bool;
+    double factor_;
 
     bool SpinFermionTerm, PairingTerm, ChemicalPotentialTerm;
 
@@ -121,15 +125,16 @@ col_ = site + ncells_*spin_beta;
 row_ = site + ncells_*spin_alpha;
 
 
-Ham_(row_,col_) += 0.5*0.5*Parameters_.J_Hund*(Pauli_z(spin_alpha,spin_beta)*Sz_i  + 
+Ham_(row_,col_) += factor_*0.5*Parameters_.J_Hund*(Pauli_z(spin_alpha,spin_beta)*Sz_i  + 
                    Pauli_x(spin_alpha,spin_beta)*Sx_i +
 		   Pauli_y(spin_alpha,spin_beta)*Sy_i) ;
 
 
-Ham_(row_ + 2*ncells_,col_+2*ncells_) += -0.5*0.5*Parameters_.J_Hund*(Pauli_z(spin_alpha,spin_beta)*Sz_i  +
+if(BdG_bool){
+Ham_(row_ + 2*ncells_,col_+2*ncells_) += -factor_*0.5*Parameters_.J_Hund*(Pauli_z(spin_alpha,spin_beta)*Sz_i  +
                    Pauli_x(spin_beta,spin_alpha)*Sx_i +
                    Pauli_y(spin_beta,spin_alpha)*Sy_i) ;
-
+}
 
 //Ham_(row_ + 2*ncells_,col_+2*ncells_) += -0.5*0.5*Parameters_.J_Hund*(Pauli_z(spin_alpha,spin_beta)*Sz_i  +
  //                  Pauli_x(spin_alpha,spin_beta)*Sx_i +
@@ -146,7 +151,7 @@ Ham_(row_ + 2*ncells_,col_+2*ncells_) += -0.5*0.5*Parameters_.J_Hund*(Pauli_z(sp
 
 void Hamiltonian_TL::Add_PairingTerm(){
 
-
+assert(BdG_bool);
 int spin_up, spin_down, col_,row_;
 spin_up=0;spin_down=1;
 for(int site=0;site<ncells_;site++){
@@ -154,20 +159,20 @@ for(int site=0;site<ncells_;site++){
 
 col_= site + ncells_*spin_down + 2*ncells_;
 row_= site + ncells_*spin_up;
-Ham_(row_,col_) += 0.5*Parameters_.Delta_s;
+Ham_(row_,col_) += factor_*Parameters_.Delta_s;
 
 
 col_= site + ncells_*spin_up + 2*ncells_;
 row_= site + ncells_*spin_down;
-Ham_(row_,col_) += -0.5*Parameters_.Delta_s;
+Ham_(row_,col_) += -factor_*Parameters_.Delta_s;
 
 col_= site + ncells_*spin_up;
 row_= site + ncells_*spin_down + 2*ncells_;
-Ham_(row_,col_) += 0.5*Parameters_.Delta_s;
+Ham_(row_,col_) += factor_*Parameters_.Delta_s;
 
 col_= site + ncells_*spin_down;
 row_= site + ncells_*spin_up + 2*ncells_;
-Ham_(row_,col_) += -0.5*Parameters_.Delta_s;
+Ham_(row_,col_) += -factor_*Parameters_.Delta_s;
 
 }
 
@@ -187,9 +192,11 @@ a = l + ncells_*spin;
 b = l + ncells_*spin;
 
 // assert(a!=b);
-Ham_(b,a) += -1.0*Parameters_.mu*0.5;
-Ham_(b+2*ncells_,a+2*ncells_) += 1.0*Parameters_.mu*0.5;
+Ham_(b,a) += -1.0*Parameters_.mu*factor_;
 
+if(BdG_bool){
+Ham_(b+2*ncells_,a+2*ncells_) += 1.0*Parameters_.mu*factor_;
+}
 
 }
 }
@@ -206,21 +213,13 @@ Add_SpinFermionTerm();
 }
 
 
-if(PairingTerm){
+if(PairingTerm && BdG_bool){
 Add_PairingTerm();
 }
 
 if(ChemicalPotentialTerm){
 Add_ChemicalPotentialTerm();
 }
-
-
-
-ly_ = Parameters_.ly;
-lx_ = Parameters_.lx;
-ncells_ = lx_ * ly_;
-n_orbs_ = 1;
-int space = 2 * ncells_ *2 ;
 
 // Ham_.print();
 /*
@@ -237,11 +236,22 @@ for (int i=0; i<space; i++){
 void Hamiltonian_TL::Initialize()
 {
 
+    BdG_bool=Parameters_.BdG_bool;
+
     ly_ = Parameters_.ly;
     lx_ = Parameters_.lx;
     ncells_ = lx_ * ly_;
     n_orbs_ = 1;
-    int space = 2 * ncells_ *2 ;
+    int space;
+
+    if(BdG_bool){
+    space = 2 * ncells_ *2 ;
+    factor_=0.5;
+	}
+	else{
+	space =ncells_*2;
+	factor_=1.0;
+	}
 
     HTB_.resize(space, space);
     Ham_.resize(space, space);
@@ -293,12 +303,13 @@ a = l + ncells_*spin;
 b = m + ncells_*spin;
 
 assert(a!=b);
-HTB_(b,a) = -1.0*t_hoppings[neigh]*0.5;
+HTB_(b,a) = -1.0*t_hoppings[neigh]*factor_;
 HTB_(a,b) = conj(HTB_(b,a)); 
 
-HTB_(b+2*ncells_,a+2*ncells_) = 1.0*t_hoppings[neigh]*0.5;
+if(BdG_bool){
+HTB_(b+2*ncells_,a+2*ncells_) = 1.0*t_hoppings[neigh]*factor_;
 HTB_(a+2*ncells_,b+2*ncells_) = conj(HTB_(b+2*ncells_,a+2*ncells_));
-
+}
 
 }
 }}
@@ -308,5 +319,9 @@ HTB_(a+2*ncells_,b+2*ncells_) = conj(HTB_(b+2*ncells_,a+2*ncells_));
 
 
 }
+
+
+
+
 
 #endif

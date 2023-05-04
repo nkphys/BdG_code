@@ -34,6 +34,7 @@ public:
         void Print_DOS(string DOSfile);
  	void Print_Eigvals(string EigValsfile);
         void Calculate_Conductance();
+        void Calculate_Akxw_ribbon();
 
 	Parameters_TL &Parameters_;
 	Coordinates_TL &Coordinates_;
@@ -48,6 +49,204 @@ ly_=Parameters_.ly;
 ns_=Parameters_.ns;
 }
 
+
+
+void Observables_TL::Calculate_Akxw_ribbon()
+{
+
+    Mat_1_doub eigs_ = Hamiltonian_.eigs_;
+
+    //---------Read from input file-----------------------//
+    string fileout = "Akx_w.txt" ;
+    double omega_min, omega_max, d_omega;
+    double eta;
+    int Nby2_ = eigs_.size()/2;
+
+    if(Hamiltonian_.BdG_bool){
+    omega_min = eigs_[Nby2_] - 0.5;
+    omega_max = eigs_[Nby2_] + 0.5;
+//	omega_min = eigs_[0] - 0.5;
+  //      omega_max = eigs_[eigs_.size()-1] + 0.5;
+	}
+	else{
+	omega_min = eigs_[0] - 0.5;
+	omega_max = eigs_[eigs_.size()-1] + 0.5;
+	}
+
+
+    d_omega = 0.005*(omega_max-omega_min);
+    eta = 1.0*d_omega;
+    //---------------------------------------------------//
+
+    int omega_index_max = int((omega_max - omega_min) / (d_omega));
+
+    ofstream file_Akw_out(fileout.c_str());
+
+    int c1, c2;
+
+    Mat_3_Complex_doub A_nk;
+    A_nk.resize(2);
+    for(int i=0;i<2;i++){
+        A_nk[i].resize(eigs_.size());
+        for(int n=0;n<eigs_.size();n++){
+            A_nk[i][n].resize(ns_);
+
+        }
+    }
+
+
+    complex<double> temp_doub;
+    int local_dof;
+    double kx_val, ky_val;
+    //----- A_\alpha\sigma(n,kx,iy) = sum_{i} Psi_{i,alpha, sigma ;n}exp(iota*K_vec \cdot r_vec) --------
+    for(int n=0;n<eigs_.size();n++){
+        for(int kx=0;kx<lx_;kx++){
+            kx_val = (2.0*PI_*kx)/(1.0*lx_) ;
+            for(int iy=0;iy<ly_;iy++){
+
+                    for(int spin=0;spin<2;spin++){
+                        local_dof=spin;
+
+                        temp_doub=0.0;
+
+                        for(int ix=0;ix<lx_;ix++){
+
+                            c1 = Coordinates_.Ncell(ix, iy) + spin*(lx_*ly_) + 2*ns_;
+			    c2 = Coordinates_.Ncell(ix, iy) + spin*(lx_*ly_);
+                            temp_doub += (Hamiltonian_.Ham_(c1, n) + Hamiltonian_.Ham_(c2, n))*exp(-1.0*iota_comp* (kx_val*ix));
+
+                        }
+                        A_nk[local_dof][n][Coordinates_.Ncell(kx,iy)]=temp_doub;
+                    }
+                
+            }
+        }
+        if(n%100==0){
+            cout << "n = "<<n<<" done"<<endl;}
+
+    }
+
+
+    cout<< "A_{alpha,sigma}(n,kx,iy) is done"<<endl;
+
+
+    Mat_3_Complex_doub A_kw;
+
+    A_kw.resize(2);
+    for(int i=0;i<2;i++){
+        A_kw[i].resize(Coordinates_.lx_);
+        for(int n=0;n<Coordinates_.lx_;n++){
+            A_kw[i][n].resize(omega_index_max);
+        }
+    }
+
+
+
+    complex<double> Nup_check(0, 0);
+    complex<double> Ndn_check(0, 0);
+
+
+
+    // A_alpha_sigma(kx,w) = 1/N^2 \sum_{n,iy} |A_alpha, sigma(n,kx,iy)|^2 delta(w-eps_{n})
+    int k, kp, k2;
+        for(int spin=0;spin<2;spin++){
+            local_dof=spin;
+
+            for(int kx=0;kx<lx_;kx++){
+
+                for(int w_no=0;w_no<omega_index_max;w_no++){
+
+                    A_kw[local_dof][kx][w_no]=0.0;
+
+                    for(int iy=0;iy<ly_;iy++){
+                        k=Coordinates_.Ncell(kx,iy);
+                        for(int n=0;n<eigs_.size();n++){
+                            A_kw[local_dof][kx][w_no] += A_nk[local_dof][n][k]*conj(A_nk[local_dof][n][k])*
+                                                         Lorentzian(eta,omega_min + (w_no * d_omega) -eigs_[n]);
+
+                        }
+                    }
+                    A_kw[local_dof][kx][w_no] = A_kw[local_dof][kx][w_no]*(1.0/(lx_*lx_));
+
+                }
+                if(kx%10==0){
+                    cout << "kx = "<<kx<<" done"<<endl;
+                }
+            }
+
+        }
+    
+
+
+
+
+    cout << "Nup_check = " << Nup_check << endl;
+    cout << "Ndn_check = " << Ndn_check << endl;
+
+
+    double kx, ky;
+    int kx_i, ky_i;
+
+    Mat_1_intpair k_path;
+    k_path.clear();
+    Mat_1_intpair k_path2;
+    k_path2.clear();
+    pair_int temp_pair;
+
+
+    // ---k_path---------
+
+    //-------- 1d path-----------------
+    kx_i = 0;
+    for (kx_i = 0; kx_i < lx_; kx_i++)
+    {
+        temp_pair.first = kx_i;
+        temp_pair.second = 0;
+        k_path.push_back(temp_pair);
+    }
+    //----------------------------------
+
+
+
+    //                  because in gnuplot use "set pm3d corners2color c1"
+    temp_pair.first = 0;
+    temp_pair.second = 0;
+    k_path.push_back(temp_pair);
+
+    //----------------------------------
+
+    //----k_path done-------
+
+
+
+
+
+    file_Akw_out<<"#k_point     kx    omega_val    omega_ind        Akw[spin=0]     Akw[spin=1]"<<endl;
+    for (int k_point = 0; k_point < k_path.size(); k_point++)
+    {
+
+        kx_i = k_path[k_point].first;
+        ky_i = k_path[k_point].second;
+        kx = (2.0 * PI * kx_i) / (1.0 * Parameters_.lx);
+        //ky = (2.0 * PI * ky_i) / (1.0 * Parameters_.ly);
+
+        for (int omega_ind = 0; omega_ind < omega_index_max; omega_ind++)
+        {
+
+            //Use 1:6:7----for gnuplot
+            file_Akw_out << k_point << "   " << kx<< "    " << omega_min + (d_omega * omega_ind) << "   " << omega_ind << "    ";
+
+                for(int spin=0;spin<2;spin++){
+                    local_dof = spin;
+                    file_Akw_out << A_kw[local_dof][kx_i][omega_ind].real()<<"     ";
+                }
+            
+            file_Akw_out << endl;
+        }
+        file_Akw_out << endl;
+    }
+
+}
 
 
 void Observables_TL::Print_Eigvals(string EigValsfile){
