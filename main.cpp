@@ -35,7 +35,7 @@ my_skyrmion.Spin_Size=1.0;
 
 my_skyrmion.Initialize_Skyrmion();
 my_skyrmion.Beta=Parameters_TL_.Skyrmion_Beta;
-my_skyrmion.BraviasLattice="TriangularLattice";
+my_skyrmion.BraviasLattice=Parameters_TL_.Lattice_Type;
 
 my_skyrmion.Create_Skyrmion();
 my_skyrmion.Skyrmion_Number_Calculate();

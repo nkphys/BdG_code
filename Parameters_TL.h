@@ -35,6 +35,7 @@ public:
     int RandomSeed;
     double alpha_OP;
     bool Self_consistency;
+    string Lattice_Type;
 
 
     double Delta_s;
@@ -86,6 +87,8 @@ void Parameters_TL::Initialize(string inputfile_)
     ly = int(matchstring(inputfile_, "Ysite"));
 
 
+    Lattice_Type=(matchstring2(inputfile_, "Lattice_Type")); 
+    assert (Lattice_Type == "TriangularLattice" || Lattice_Type == "SquareLattice");
 
     BdG_double = double(matchstring(inputfile_,"BdG_bool"));
     if(BdG_double==1.0){

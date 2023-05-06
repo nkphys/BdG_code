@@ -1,8 +1,8 @@
-
-PairingTerm=1
-JJ_Channel=1
-SpinFermionTerm=1
-ChemicalPotentialTerm=1
+Lattice_Type=SquareLattice
+PairingTerm=0
+JJ_Channel=0
+SpinFermionTerm=0
+ChemicalPotentialTerm=0
 t_nn=1
 V_attraction=0.0
 J_Hund=0.5
@@ -12,15 +12,15 @@ JJ_width=3
 
 
 Skyrmion_Type=NeelSkyrmion
-Skyrmion_Diameter=10
+Skyrmion_Diameter=5
 Skyrmion_Beta=0.4
 
-Xsite=44
-Ysite=66
+Xsite=12
+Ysite=12
 
-BdG_bool=1
+BdG_bool=0
 PBC_X=1
-PBC_Y=0
+PBC_Y=1
 
 
 Temperature=0.00001

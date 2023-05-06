@@ -322,9 +322,15 @@ void Hamiltonian_TL::HTBCreate(){
 Mat_1_int t_neighs;
 Mat_1_doub t_hoppings;
 
-
+if (Parameters_.Lattice_Type=="TriangularLattice"){
 t_neighs.push_back(0);t_neighs.push_back(2);t_neighs.push_back(7);
 t_hoppings.push_back(Parameters_.t_nn); t_hoppings.push_back(Parameters_.t_nn);t_hoppings.push_back(Parameters_.t_nn);
+}
+
+if (Parameters_.Lattice_Type=="SquareLattice"){
+t_neighs.push_back(0);t_neighs.push_back(2);
+t_hoppings.push_back(Parameters_.t_nn); t_hoppings.push_back(Parameters_.t_nn);
+}
 
 int m,a,b;
 for(int l=0;l<ncells_;l++){
