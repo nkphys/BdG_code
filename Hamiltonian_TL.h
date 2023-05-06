@@ -189,25 +189,27 @@ spin_up=0;spin_down=1;
   for(int site=0;site<ncells_;site++){                                                                                            
                                                                                                                                   
     int ix = Coordinates_.indx_basiswise(site);                                                                                                 
-    int W_left = static_cast<int>((lx_ - Parameters_.JJ_width)/2.0);                                                                                 
-    int W_right = static_cast<int>((lx_ + Parameters_.JJ_width)/2.0);                                                                                
-                                                                                                                                  
-    if ( (ix > W_left) && (ix <= W_left) ){                                                                                       
+    int W_left = int((lx_ - Parameters_.JJ_width)/2);                                                                                 
+    int W_right = int((lx_ + Parameters_.JJ_width)/2);                                                                                
+
+    assert(ix<lx_);                            
+                                                                                                      
+    if ( (ix > W_left) && (ix <= W_right) ){                                                                                       
       col_= site + ncells_*spin_down + 2*ncells_;                                                                                 
       row_= site + ncells_*spin_up;                                                                                               
-      Ham_(row_,col_) += 0.0*Parameters_.Delta_s;                                                                                 
+      Ham_(row_,col_) = 0.0;                                                                                 
                                                                                                                                   
       col_= site + ncells_*spin_up + 2*ncells_;                                                                                   
       row_= site + ncells_*spin_down;                                                                                             
-      Ham_(row_,col_) += -0.0*Parameters_.Delta_s;                                                                                
+      Ham_(row_,col_) = 0.0;                                                                                
                                                                                                                                   
       col_= site + ncells_*spin_up;                                                                                               
       row_= site + ncells_*spin_down + 2*ncells_;                                                                                 
-      Ham_(row_,col_) += 0.0*Parameters_.Delta_s;                                                                                 
+      Ham_(row_,col_) = 0.0;                                                                                 
                                                                                                                                   
       col_= site + ncells_*spin_down;                                                                                             
       row_= site + ncells_*spin_up + 2*ncells_;                                                                                   
-      Ham_(row_,col_) += -0.0*Parameters_.Delta_s;                                                                                
+      Ham_(row_,col_) = 0.0;                                                                                
     }                                                                                                                             
                                                                                                                                   
   }                                                                                                                               
