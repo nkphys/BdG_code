@@ -63,14 +63,14 @@ void Observables_TL::Calculate_Akxw_ribbon()
     int Nby2_ = eigs_.size()/2;
 
     if(Hamiltonian_.BdG_bool){
-    omega_min = eigs_[Nby2_] - 0.5;
-    omega_max = eigs_[Nby2_] + 0.5;
-//	omega_min = eigs_[0] - 0.5;
-  //      omega_max = eigs_[eigs_.size()-1] + 0.5;
+//    omega_min = eigs_[Nby2_] - 0.5;
+ //   omega_max = eigs_[Nby2_] + 0.5;
+	omega_min = eigs_[0] - 0.5;
+        omega_max = eigs_[eigs_.size()-1] + 0.5;
 	}
 	else{
-	omega_min = eigs_[0] - 0.5;
-	omega_max = eigs_[eigs_.size()-1] + 0.5;
+	omega_min = eigs_[0] - 0.1;
+	omega_max = eigs_[eigs_.size()-1] + 0.1;
 	}
 
 
@@ -111,10 +111,15 @@ void Observables_TL::Calculate_Akxw_ribbon()
 
                         for(int ix=0;ix<lx_;ix++){
 
+			   if(Parameters_.BdG_bool){
                             c1 = Coordinates_.Ncell(ix, iy) + spin*(lx_*ly_) + 2*ns_;
 			    c2 = Coordinates_.Ncell(ix, iy) + spin*(lx_*ly_);
                             temp_doub += (Hamiltonian_.Ham_(c1, n) + Hamiltonian_.Ham_(c2, n))*exp(-1.0*iota_comp* (kx_val*ix));
-
+				}
+				else{
+                            c2 = Coordinates_.Ncell(ix, iy) + spin*(lx_*ly_);
+                            temp_doub += (Hamiltonian_.Ham_(c2, n))*exp(-1.0*iota_comp* (kx_val*ix));
+				}
                         }
                         A_nk[local_dof][n][Coordinates_.Ncell(kx,iy)]=temp_doub;
                     }

@@ -26,7 +26,7 @@ public:
 
 
 	int Diameter;
-	double Radius_x, Radius_y; //Radius of skyrmion
+	double Radius_x, Radius_y, Radius; //Radius of skyrmion
 	double Beta; //decay coeffcient
 
 	double OptimizedBeta;
@@ -77,6 +77,7 @@ No_of_Sk_y = int(Ly/Diameter);
 
 Radius_x = (1.0*Diameter)/2.0;
 Radius_y = (1.0*Diameter)/2.0;
+Radius = Radius_y;
 
 if(Radius_x!=Radius_y){
 cout<<" Radius_x -ne Radius_y  needs NEW EQUATION"<<endl;
@@ -91,6 +92,8 @@ OptimizedBeta=0.05;
 
 void SKYRMION::Create_Skyrmion(){
 
+
+Radius_y=0;
 
 double offset=0.0001;
 double alpha = 1.0; //contribution decay constant used in "Fermi" function
@@ -112,9 +115,16 @@ for(int iy=0;iy<Ly;iy++){
 
 Theta_[ix][iy]=0;Phi_[ix][iy]=0;
 
-for(int sk_ix=0;sk_ix<No_of_Sk_x;sk_ix++){
-for(int sk_iy=0;sk_iy<No_of_Sk_y;sk_iy++){
+int No_of_Sk_y_temp;
+No_of_Sk_y_temp=No_of_Sk_y;
+if(No_of_Sk_y==0){
+No_of_Sk_y_temp=1;
+}
 
+for(int sk_ix=0;sk_ix<No_of_Sk_x;sk_ix++){
+for(int sk_iy=0;sk_iy<No_of_Sk_y_temp;sk_iy++){
+
+cout<<sk_ix<< "   "<<sk_iy<<endl;
 sk_cent_x = ((  (2*Radius_x + 1.0)*sk_ix) + Radius_x );
 sk_cent_y = ((  (2*Radius_y + 1.0)*sk_iy) + Radius_y );
 
@@ -226,6 +236,13 @@ Phi_[ix][iy] += (2*PI_ - atan(  (abs(dis_y)+offset)/(abs(dis_x)+offset)  ) ) * T
 
 }
 
+if(Skyrmion_Type=="1D_Spiral")
+{
+
+Theta_[ix][iy] = (((PI_*Beta*ix)/Lx));
+//Theta_[ix][iy] += 2.0*atan(Radius/dis)*exp(Beta*(-1.0*dis))*Theta((Radius) -dis);
+Phi_[ix][iy] = (((2*PI_*Beta*ix)/Lx));
+}
 
 }
 }
@@ -242,7 +259,7 @@ double Sz, Sx, Sy;
 
 ofstream outfile(SkyrmionFilepath.c_str());
 
-outfile<<"#ix   iy   Sz   Sx   Sy   Theta[ix][iy]     Phi[ix][iy]"<<endl;
+outfile<<"#ix   iy   Sz   Sx   Sy   Theta[ix][iy]     Phi[ix][iy]    Cos(Phi)    Sin(Phi)"<<endl;
 for(int ix=0;ix<Lx;ix++){
 for(int iy=0;iy<Ly;iy++){
 
@@ -253,7 +270,7 @@ Sy=Spin_Size*sin(Theta_[ix][iy])*sin(Phi_[ix][iy]);
 outfile<<ix<<"  "<<iy<<"  "<< Sz<<"  "<<Sx<<"  "<<Sy<<"  "<< Theta_[ix][iy]<<"  "<<Phi_[ix][iy]<< "  "<<cos(Phi_[ix][iy])<<"  "<<sin(Phi_[ix][iy])<<endl;
 }
 
-outfile<<endl;
+//outfile<<endl;
 
 }
 

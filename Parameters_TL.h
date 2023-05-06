@@ -22,7 +22,9 @@ public:
     string Skyrmion_Type;//=NeelSkyrmion
     int Skyrmion_Diameter;//=6
     double Skyrmion_Beta;
-
+   
+    double Delta_p;
+    string Lattice_Type;
 
     double BdG_double;
     bool BdG_bool;
@@ -35,7 +37,6 @@ public:
     int RandomSeed;
     double alpha_OP;
     bool Self_consistency;
-    string Lattice_Type;
 
 
     double Delta_s;
@@ -71,6 +72,7 @@ void Parameters_TL::Initialize(string inputfile_)
     V_attract = double(matchstring(inputfile_, "V_attraction"));
     J_Hund = double(matchstring(inputfile_, "J_Hund"));
     Delta_s = double(matchstring(inputfile_, "Delta_s_local"));
+    Delta_p = double(matchstring(inputfile_, "Delta_p"));
     mu = double(matchstring(inputfile_, "mu"));
     JJ_width = int(matchstring(inputfile_, "JJ_width"));
 
@@ -78,6 +80,9 @@ void Parameters_TL::Initialize(string inputfile_)
     Skyrmion_Type=(matchstring2(inputfile_, "Skyrmion_Type")); 
     Skyrmion_Beta=double(matchstring(inputfile_, "Skyrmion_Beta"));
 
+
+    Lattice_Type=(matchstring2(inputfile_, "Lattice_Type"));
+    assert(Lattice_Type=="TriangularLattice" || Lattice_Type=="SquareLattice");
 
     Temperature = double(matchstring(inputfile_, "Temperature"));
     beta_T = Boltzman_Const/Temperature;
@@ -87,8 +92,6 @@ void Parameters_TL::Initialize(string inputfile_)
     ly = int(matchstring(inputfile_, "Ysite"));
 
 
-    Lattice_Type=(matchstring2(inputfile_, "Lattice_Type")); 
-    assert (Lattice_Type == "TriangularLattice" || Lattice_Type == "SquareLattice");
 
     BdG_double = double(matchstring(inputfile_,"BdG_bool"));
     if(BdG_double==1.0){

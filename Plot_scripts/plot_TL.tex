@@ -14,6 +14,7 @@
 }%
 \makeatother
 % Load packages
+\usepackage{calc}
 \usepackage{graphicx}
 \usepackage{color}
 \makeatletter
@@ -136,19 +137,20 @@
     \fi%
     \setlength{\fboxrule}{0.5pt}%
     \setlength{\fboxsep}{1pt}%
+    \definecolor{tbcol}{rgb}{1,1,1}%
 \begin{picture}(7200.00,5577.15)%
     \gplgaddtomacro\gplbacktext{%
     }%
     \gplgaddtomacro\gplfronttext{%
-      \csname LTb\endcsname%
+      \csname LTb\endcsname%%
       \put(6283,264){\makebox(0,0)[l]{\strut{}$-1$}}%
-      \put(6283,1526){\makebox(0,0)[l]{\strut{}$-0.5$}}%
-      \put(6283,2788){\makebox(0,0)[l]{\strut{}$0$}}%
-      \put(6283,4050){\makebox(0,0)[l]{\strut{}$0.5$}}%
-      \put(6283,5312){\makebox(0,0)[l]{\strut{}$1$}}%
+      \put(6283,1537){\makebox(0,0)[l]{\strut{}$-0.5$}}%
+      \put(6283,2810){\makebox(0,0)[l]{\strut{}$0$}}%
+      \put(6283,4083){\makebox(0,0)[l]{\strut{}$0.5$}}%
+      \put(6283,5356){\makebox(0,0)[l]{\strut{}$1$}}%
     }%
     \gplbacktext
-    \put(0,0){\includegraphics{plot_TL-inc}}%
+    \put(0,0){\includegraphics[width={360.00bp},height={278.86bp}]{plot_TL-inc}}%
     \gplfronttext
   \end{picture}%
 \endgroup

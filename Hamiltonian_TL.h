@@ -40,6 +40,7 @@ public:
 	
     void Add_SpinFermionTerm();
     void Add_PairingTerm();
+    void Add_Pwave_PairingTerm();
     void Add_JJ_Channel();
     void Add_ChemicalPotentialTerm();
     void HamilCreation();
@@ -180,6 +181,45 @@ Ham_(row_,col_) += -factor_*Parameters_.Delta_s;
 
 
 
+void Hamiltonian_TL::Add_Pwave_PairingTerm(){
+
+assert(BdG_bool);
+int col_,row_;
+for(int spin_=0;spin_<2;spin_++){
+for(int site=0;site<ncells_;site++){
+
+int neigh = Coordinates_.getneigh(site,0);
+
+if( (!Coordinates_.HIT_X_BC) || Parameters_.PBC_X){
+
+//(X)c_row_dag c_col_dag
+col_= neigh + ncells_*spin_ + 2*ncells_; 
+row_= site + ncells_*spin_;     
+Ham_(row_,col_) += factor_*Parameters_.Delta_p;
+
+col_= site + ncells_*spin_ + 2*ncells_;
+row_= neigh + ncells_*spin_;
+Ham_(row_,col_) += -factor_*Parameters_.Delta_p;
+
+//Hermitian Conjugate terms
+col_= site + ncells_*spin_;
+row_= neigh + ncells_*spin_ + 2*ncells_;
+Ham_(row_,col_) += factor_*Parameters_.Delta_p;
+
+col_= neigh + ncells_*spin_;
+row_= site + ncells_*spin_ + 2*ncells_;
+Ham_(row_,col_) += -factor_*Parameters_.Delta_p;
+
+}
+
+}
+}
+
+
+}
+
+
+
 void Hamiltonian_TL::Add_JJ_Channel(){                                                                                            
                                                                                                                                   
 assert(BdG_bool);
@@ -249,6 +289,7 @@ Add_SpinFermionTerm();
 
 if(PairingTerm && BdG_bool){
 Add_PairingTerm();
+Add_Pwave_PairingTerm();
 }
 
 if(JJ_Channel && BdG_bool){                                                                                                                   
@@ -322,15 +363,22 @@ void Hamiltonian_TL::HTBCreate(){
 Mat_1_int t_neighs;
 Mat_1_doub t_hoppings;
 
-if (Parameters_.Lattice_Type=="TriangularLattice"){
+
+if(Parameters_.Lattice_Type=="TriangularLattice"){
 t_neighs.push_back(0);t_neighs.push_back(2);t_neighs.push_back(7);
 t_hoppings.push_back(Parameters_.t_nn); t_hoppings.push_back(Parameters_.t_nn);t_hoppings.push_back(Parameters_.t_nn);
 }
-
-if (Parameters_.Lattice_Type=="SquareLattice"){
-t_neighs.push_back(0);t_neighs.push_back(2);
-t_hoppings.push_back(Parameters_.t_nn); t_hoppings.push_back(Parameters_.t_nn);
+if(Parameters_.Lattice_Type=="SquareLattice"){
+if(lx_>1){
+t_neighs.push_back(0);t_hoppings.push_back(Parameters_.t_nn);
 }
+if(ly_>1){
+t_neighs.push_back(2);t_hoppings.push_back(Parameters_.t_nn);
+}
+}
+
+
+
 
 int m,a,b;
 for(int l=0;l<ncells_;l++){
