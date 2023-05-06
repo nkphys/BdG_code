@@ -19,6 +19,11 @@ public:
     double beta_T, mus;
     double eta, domega;
 
+    string Skyrmion_Type;//=NeelSkyrmion
+    int Skyrmion_Diameter;//=6
+    double Skyrmion_Beta;
+
+
     double BdG_double;
     bool BdG_bool;
     double Temperature;
@@ -67,6 +72,10 @@ void Parameters_TL::Initialize(string inputfile_)
     Delta_s = double(matchstring(inputfile_, "Delta_s_local"));
     mu = double(matchstring(inputfile_, "mu"));
     JJ_width = int(matchstring(inputfile_, "JJ_width"));
+
+    Skyrmion_Diameter= int(matchstring(inputfile_, "Skyrmion_Diameter"));
+    Skyrmion_Type=(matchstring2(inputfile_, "Skyrmion_Type")); 
+    Skyrmion_Beta=double(matchstring(inputfile_, "Skyrmion_Beta"));
 
 
     Temperature = double(matchstring(inputfile_, "Temperature"));

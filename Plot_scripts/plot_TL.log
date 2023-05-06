@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2020.2.6)  4 MAY 2023 03:31
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2020.2.6)  6 MAY 2023 01:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -196,11 +196,11 @@ e
 \gptboxwidth=\skip42
 \gptboxtext=\box27
 Package epstopdf Info: Source file: <plot_TL-inc.eps>
-(epstopdf)                    date: 2023-05-04 03:31:20
-(epstopdf)                    size: 98857 bytes
+(epstopdf)                    date: 2023-05-06 01:23:44
+(epstopdf)                    size: 267552 bytes
 (epstopdf)             Output file: <plot_TL-inc-eps-converted-to.pdf>
-(epstopdf)                    date: 2023-05-04 03:29:17
-(epstopdf)                    size: 30865 bytes
+(epstopdf)                    date: 2023-05-06 01:22:57
+(epstopdf)                    size: 21853 bytes
 (epstopdf)             Command: <repstopdf --outfile=plot_TL-inc-eps-converted-
 to.pdf plot_TL-inc.eps>
 (epstopdf)             \includegraphics on input line 151.
@@ -208,8 +208,8 @@ runsystem(repstopdf --outfile=plot_TL-inc-eps-converted-to.pdf plot_TL-inc.eps)
 ...executed safely (allowed).
 
 Package epstopdf Info: Result file: <plot_TL-inc-eps-converted-to.pdf>
-(epstopdf)                    date: 2023-05-04 03:31:22
-(epstopdf)                    size: 35905 bytes.
+(epstopdf)                    date: 2023-05-06 01:23:45
+(epstopdf)                    size: 81382 bytes.
 
 
 pdfTeX warning: pdflatex (file ./plot_TL-inc-eps-converted-to.pdf): PDF inclusi
@@ -241,7 +241,7 @@ Here is how much of TeX's memory you used:
 c/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
 onts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
 /cmsy10.pfb>
-Output written on plot_TL.pdf (1 page, 57223 bytes).
+Output written on plot_TL.pdf (1 page, 102706 bytes).
 PDF statistics:
  23 PDF objects out of 1000 (max. 8388607)
  15 compressed objects within 1 object stream

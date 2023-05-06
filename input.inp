@@ -10,8 +10,13 @@ Delta_s_local=0.26
 mu=-5.5
 JJ_width=3
 
-Xsite=14
-Ysite=21
+
+Skyrmion_Type=NeelSkyrmion
+Skyrmion_Diameter=10
+Skyrmion_Beta=0.4
+
+Xsite=44
+Ysite=66
 
 BdG_bool=1
 PBC_X=1
