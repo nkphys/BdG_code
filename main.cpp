@@ -62,8 +62,8 @@ Observables_TL Observables_TL_(Parameters_TL_, Coordinates_TL_, Hamiltonian_TL_)
 
 Observables_TL_.Print_Eigvals("Eigenvals.txt");
 Observables_TL_.Print_DOS("dos_check.txt");
-
-Observables_TL_.Calculate_Akxw_ribbon();
+Observables_TL_.Calculate_LDOS_SiteResolved();
+//Observables_TL_.Calculate_Akxw_ribbon();
 
 //------------------------
 

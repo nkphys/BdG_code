@@ -8,6 +8,7 @@ class Parameters_TL
 public:
     int lx, ly, ns;
     
+    int TotalSites;
     double BoundaryConnection_X, BoundaryConnection_Y;
     bool PBC_X, PBC_Y;
 
@@ -25,6 +26,10 @@ public:
    
     double Delta_p;
     string Lattice_Type;
+    string HoppingFile;
+    string PairingFile;
+    Matrix<double> Mat_Hop;
+    Matrix<complex<double>> Delta_mat;
 
     double BdG_double;
     bool BdG_bool;
@@ -82,7 +87,33 @@ void Parameters_TL::Initialize(string inputfile_)
 
 
     Lattice_Type=(matchstring2(inputfile_, "Lattice_Type"));
-    assert(Lattice_Type=="TriangularLattice" || Lattice_Type=="SquareLattice");
+    assert(Lattice_Type=="TriangularLattice" || Lattice_Type=="SquareLattice" ||
+           Lattice_Type=="LongRange");
+
+
+    if(Lattice_Type=="LongRange"){
+    HoppingFile=(matchstring2(inputfile_, "Hopping_file"));
+    TotalSites=int(matchstring(inputfile_, "TotalSites"));
+    Mat_Hop.resize(TotalSites, TotalSites);
+    ifstream HoppingFilePath(HoppingFile.c_str());
+    for(int i=0;i<TotalSites;i++){
+    for(int j=0;j<TotalSites;j++){
+    HoppingFilePath>>Mat_Hop(i,j);
+    }}
+
+
+    //Delta_mat
+    PairingFile=(matchstring2(inputfile_, "Pairing_file"));
+    Delta_mat.resize(TotalSites, TotalSites);
+    ifstream PairingFilePath(PairingFile.c_str());
+    for(int i=0;i<TotalSites;i++){
+    for(int j=0;j<TotalSites;j++){
+    PairingFilePath>>Delta_mat(i,j);
+    //cout<<i<<"  "<<j<<"  "<<Delta_mat(i,j)<<"  "<<endl;
+    }}
+
+    }
+    
 
     Temperature = double(matchstring(inputfile_, "Temperature"));
     beta_T = Boltzman_Const/Temperature;
@@ -90,7 +121,9 @@ void Parameters_TL::Initialize(string inputfile_)
 
     lx = int(matchstring(inputfile_, "Xsite"));
     ly = int(matchstring(inputfile_, "Ysite"));
-
+    if(Lattice_Type!="LongRange"){
+        TotalSites=lx*ly;
+    }
 
 
     BdG_double = double(matchstring(inputfile_,"BdG_bool"));

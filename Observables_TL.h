@@ -35,6 +35,7 @@ public:
  	void Print_Eigvals(string EigValsfile);
         void Calculate_Conductance();
         void Calculate_Akxw_ribbon();
+        void Calculate_LDOS_SiteResolved();
 
 	Parameters_TL &Parameters_;
 	Coordinates_TL &Coordinates_;
@@ -49,6 +50,38 @@ ly_=Parameters_.ly;
 ns_=Parameters_.ns;
 }
 
+
+
+void Observables_TL::Calculate_LDOS_SiteResolved(){
+
+
+
+double w_min=Hamiltonian_.eigs_[0] -1.0;
+double w_max=Hamiltonian_.eigs_[Hamiltonian_.eigs_.size()-1] +1.0;
+double dw=0.01;
+double eta=0.005;
+double dos_;
+int comp;
+
+for(int SiteNo=0;SiteNo<Parameters_.TotalSites;SiteNo++){
+string fileout = "Site_" +to_string(SiteNo) +"_SiteResolvedDOS.txt" ;
+ofstream file_out(fileout.c_str());
+comp = SiteNo + 0*(Parameters_.TotalSites);
+
+double w_val=w_min;
+while(w_val<=w_max){
+dos_=0.0;
+for(int n=0;n<Hamiltonian_.eigs_.size();n++){
+dos_ += abs(Hamiltonian_.Ham_(comp, n))*abs(Hamiltonian_.Ham_(comp, n))*Lorentzian(eta, w_val - Hamiltonian_.eigs_[n]);
+}
+
+file_out<<w_val<< "   "<<dos_<<endl;
+
+w_val +=dw;
+}
+}//Site
+
+}
 
 
 void Observables_TL::Calculate_Akxw_ribbon()

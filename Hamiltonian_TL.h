@@ -184,6 +184,8 @@ Ham_(row_,col_) += -factor_*Parameters_.Delta_s;
 void Hamiltonian_TL::Add_Pwave_PairingTerm(){
 
 assert(BdG_bool);
+
+if(Parameters_.Lattice_Type != "LongRange"){
 int col_,row_;
 for(int spin_=0;spin_<2;spin_++){
 for(int site=0;site<ncells_;site++){
@@ -211,10 +213,36 @@ row_= site + ncells_*spin_ + 2*ncells_;
 Ham_(row_,col_) += -factor_*Parameters_.Delta_p;
 
 }
-
 }
 }
+}
 
+else{ //LongRange
+for(int spin_=0;spin_<2;spin_++){
+for(int site=0;site<ncells_;site++){
+for(int sitep=0;sitep<ncells_;sitep++){ 
+
+int col_,row_;
+
+//Delta_mat(site,sitep)c_site^dag c_sitep^dag
+
+//(X)c_row_dag c_col_dag
+col_= sitep + ncells_*spin_ + 2*ncells_; 
+row_= site + ncells_*spin_;     
+Ham_(row_,col_) += factor_*Parameters_.Delta_mat(site,sitep);
+
+
+//Hermitian Conjugate terms
+col_= site + ncells_*spin_;
+row_= sitep + ncells_*spin_ + 2*ncells_;
+Ham_(row_,col_) += factor_*conj(Parameters_.Delta_mat(site,sitep));
+
+
+
+ }
+}
+}
+}
 
 }
 
@@ -318,7 +346,7 @@ void Hamiltonian_TL::Initialize()
 
     ly_ = Parameters_.ly;
     lx_ = Parameters_.lx;
-    ncells_ = lx_ * ly_;
+    ncells_ = Parameters_.TotalSites;
     n_orbs_ = 1;
     int space;
 
@@ -364,6 +392,10 @@ Mat_1_int t_neighs;
 Mat_1_doub t_hoppings;
 
 
+
+
+if(Parameters_.Lattice_Type != "LongRange"){
+
 if(Parameters_.Lattice_Type=="TriangularLattice"){
 t_neighs.push_back(0);t_neighs.push_back(2);t_neighs.push_back(7);
 t_hoppings.push_back(Parameters_.t_nn); t_hoppings.push_back(Parameters_.t_nn);t_hoppings.push_back(Parameters_.t_nn);
@@ -376,8 +408,6 @@ if(ly_>1){
 t_neighs.push_back(2);t_hoppings.push_back(Parameters_.t_nn);
 }
 }
-
-
 
 
 int m,a,b;
@@ -396,17 +426,41 @@ b = m + ncells_*spin;
 
 assert(a!=b);
 HTB_(b,a) = -1.0*t_hoppings[neigh]*factor_;
-HTB_(a,b) = conj(HTB_(b,a)); 
+ 
 
 if(BdG_bool){
 HTB_(b+2*ncells_,a+2*ncells_) = 1.0*t_hoppings[neigh]*factor_;
+}
+
+}
+}}
+
+}}
+
+}
+else{  // Using LongRange
+
+int a, b;
+for(int l=0;l<Parameters_.TotalSites;l++){
+for(int m=0;m<Parameters_.TotalSites;m++){
+for (int spin=0;spin<2;spin++){
+
+a = l + ncells_*spin;
+b = m + ncells_*spin;
+
+HTB_(b,a) = -1.0*Parameters_.Mat_Hop(l,m)*factor_;
+
+
+if(BdG_bool){
+HTB_(b+2*ncells_,a+2*ncells_) = 1.0*Parameters_.Mat_Hop(l,m)*factor_;
 HTB_(a+2*ncells_,b+2*ncells_) = conj(HTB_(b+2*ncells_,a+2*ncells_));
-}
-
-}
-}}
 
 }}
+}}
+
+
+}
+
 
 
 
