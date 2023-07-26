@@ -36,6 +36,7 @@ public:
         void Calculate_Conductance();
         void Calculate_Akxw_ribbon();
         void Calculate_LDOS_SiteResolved();
+        void Calculate_DOS_Omega_Zero_for_AllSites();
 
 	Parameters_TL &Parameters_;
 	Coordinates_TL &Coordinates_;
@@ -52,14 +53,38 @@ ns_=Parameters_.ns;
 
 
 
+
+void Observables_TL::Calculate_DOS_Omega_Zero_for_AllSites(){
+
+
+string fileout = "DOS_omega_0.txt" ;
+ofstream file_out(fileout.c_str());
+double eta=0.01; //eta=dw*0.01
+double w_val=0.0;
+int comp;
+double dos_;
+for(int SiteNo=0;SiteNo<Parameters_.TotalSites;SiteNo++){
+comp = SiteNo + 0*(Parameters_.TotalSites);
+dos_=0.0;
+for(int n=0;n<Hamiltonian_.eigs_.size();n++){
+dos_ += abs(Hamiltonian_.Ham_(comp, n))*abs(Hamiltonian_.Ham_(comp, n))*Lorentzian(eta, w_val - Hamiltonian_.eigs_[n]);
+}
+file_out<<SiteNo<<"  "<<dos_<<endl;
+
+}
+
+
+}
+
+
 void Observables_TL::Calculate_LDOS_SiteResolved(){
 
 
 
 double w_min=Hamiltonian_.eigs_[0] -1.0;
 double w_max=Hamiltonian_.eigs_[Hamiltonian_.eigs_.size()-1] +1.0;
-double dw=0.01;
-double eta=0.005;
+double dw=(w_max -w_min)/5000.0;
+double eta=0.01; //eta=dw*0.01
 double dos_;
 int comp;
 
